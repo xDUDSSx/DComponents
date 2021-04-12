@@ -40,9 +40,21 @@ public abstract class DPanelListItem<V> extends JPanel {
 	 */
 	public abstract void updateComponents(boolean selected);
 	
+	/**
+	 * Method called when panel selection changes and selection highlights (background/foregrounds) need updating.
+	 * This is the place to change panel specific selection foreground.
+	 * @param selected Whether this panel is in the current {@link DPanelList}s selection.
+	 */
+	public void updateSelection(boolean selected) {
+		if (selected) {
+			this.setBackground(this.getSelectionBackgroundColor());
+		} else {
+			this.setBackground(this.getBackgroundColor());
+		}
+	}
 	
 	/**
-	 * The background color the panel should be set to. (Unless it is selected and {@link DPanelList#setPaintBackgroundOnSelection(boolean)} was set to true)
+	 * The background color the panel should be set to. (Unless it is selected and {@link DPanelList#setPaintHighlights(boolean)} was set to true)
 	 */
 	public Color getBackgroundColor() {
 		return UIManager.getColor("List.background");

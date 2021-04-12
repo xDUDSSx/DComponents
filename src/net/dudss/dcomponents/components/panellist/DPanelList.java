@@ -133,7 +133,7 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 	Border highlightBorder = new MatteBorder(0, 6, 0, 6, dropHighlight);
 	
 	private SelectionMode selectionMode;
-	private boolean paintBackgroundOnSelection = true;
+	private boolean paintHighlights = true;
 	
 	private ActionListener actionListener;
 	private ActionListener structureListener;
@@ -179,7 +179,7 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 	 * @param panelClass The class of the custom {@link DPanelListItem} representing a single {@link objectList} element.
 	 * @param selectionMode The selection mode of the component.
 	 * @param enableDragAndDrop Whether to enable the drag-and-drop functionality.
-	 * @param paintBackgroundOnSelection Whether to set panels background color upon selection and de-selection.
+	 * @param paintHighlights Whether to call {@linkplain DPanelListItem#updateSelection(boolean)} upon panel selection and de-selection.
 	 * @param paintBorderOutside Whether to paint the selection border inside or outside of the item panels.
 	 * @param headerComponent Optional header component of the {@link JScrollPane} column header.
 	 * 
@@ -206,20 +206,20 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 	 * @param panelClass The class of the custom {@link DPanelListItem} representing a single {@link objectList} element.
 	 * @param selectionMode The selection mode of the component.
 	 * @param enableDragAndDrop Whether to enable the drag-and-drop functionality.
-	 * @param paintBackgroundOnSelection Whether to set panels background color upon selection and de-selection.
+	 * @param paintHighlights Whether to call {@linkplain DPanelListItem#updateSelection(boolean)} upon panel selection and de-selection.
 	 * @param paintBorderOutside Whether to paint the selection border inside or outside of the item panels.
 	 * @param headerComponent Optional header component of the {@link JScrollPane} column header.
 	 * @param gap Sets the gap in-between item panels..
 	 * @param sideGap Sets the left and right gap of item panels.
 	 * 
 	 * */
-	public DPanelList(List<V> objectList, Class<T> panelClass, SelectionMode selectionMode, boolean enableDragAndDrop, boolean paintBackgroundOnSelection, boolean paintBorderOutside, Component headerComponent, int gap, int sideGap) {
+	public DPanelList(List<V> objectList, Class<T> panelClass, SelectionMode selectionMode, boolean enableDragAndDrop, boolean paintHighlights, boolean paintBorderOutside, Component headerComponent, int gap, int sideGap) {
 		panels = new ArrayList<T>();		
 		objects = objectList;
 		this.panelClass = panelClass;
 		this.selectionMode = selectionMode;
 		this.enableDragAndDrop = enableDragAndDrop;		
-		this.paintBackgroundOnSelection = paintBackgroundOnSelection;
+		this.paintHighlights = paintHighlights;
 		this.gap = gap;
 		this.sideGap = sideGap;
 		this.paintBorderOutside = paintBorderOutside;
@@ -250,7 +250,7 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 		}
 		
 		if (selectionMode == SelectionMode.UNSELECTION_FORCED) {
-			this.paintBackgroundOnSelection = false;
+			this.paintHighlights = false;
 		}
 		
 		updateSelection();
@@ -273,8 +273,11 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 		this.structureListener = listener;
 	}
 	
-	public void setPaintBackgroundOnSelection(boolean b) {
-		paintBackgroundOnSelection = b;
+	/**
+	 * Whether to call {@linkplain DPanelListItem#updateSelection(boolean)} upon panel selection and de-selection.
+	 */
+	public void setPaintHighlights(boolean b) {
+		paintHighlights = b;
 	}
 	
 	public List<V> getList() {
@@ -605,24 +608,6 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 		}
 	}
 	
-	/*private void refreshListeners() {
-		for (T panel : panels) {
-			for (MouseMotionListener l : mouseListeners) {
-				boolean listenerFound = false;
-				for (int i = 0; i < panel.getMouseMotionListeners().length; i++) {
-					if (panel.getMouseMotionListeners()[i] == l) {
-						listenerFound = true;
-						break;
-					}
-				}
-				
-				if (!listenerFound) {
-					panel.addMouseMotionListener(l);
-				}
-			}
-		}
-	}*/
-	
 	/**
 	 * Regenerates the entire layout (Time expensive)
 	 */
@@ -630,22 +615,19 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 		innerPanel.removeAll();
 		for (T panel : panels) {
 			innerPanel.add(panel, "wrap, grow, wmin 1"); //wmin 1 to fix mig layout shrinking issues when using text wrap components (eg. text area)
-			if (paintBackgroundOnSelection) {
+			if (paintHighlights) {
+				panel.updateSelection(panel.selected());
 				if (!panel.selected()) {
-					panel.setBackground(panel.getBackgroundColor());	
 					if (!paintBorderOutside) {
 						panel.setBorder(null);
 					}
 				} else {
-					panel.setBackground(panel.getSelectionBackgroundColor());
 					if (!paintBorderOutside) {
 						panel.setBorder(highlightBorder);
 					}
 				}
 			}
 			panel.updateComponents(panel.selected());
-			//panel.revalidate();
-			//panel.repaint();
 		}
 		revalidateAndRepaint();
 	}
@@ -656,22 +638,19 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 	@SuppressWarnings("unused")
 	private void refreshRows() {
 		for (T panel : panels) {
-			if (paintBackgroundOnSelection) {
+			if (paintHighlights) {
+				panel.updateSelection(panel.selected());
 				if (!panel.selected()) {
-					panel.setBackground(panel.getBackgroundColor());	
 					if (!paintBorderOutside) {
 						panel.setBorder(null);
 					}
 				} else {
-					panel.setBackground(panel.getSelectionBackgroundColor());
 					if (!paintBorderOutside) {
 						panel.setBorder(highlightBorder);
 					}
 				}
 			}
 			panel.updateComponents(panel.selected());
-			//panel.revalidate();
-			//panel.repaint();
 		}
 		revalidateAndRepaint();
 	}
@@ -681,21 +660,18 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 	 */
 	private void refreshBackgrounds() {
 		for (T panel : panels) {
-			if (paintBackgroundOnSelection) {
+			if (paintHighlights) {
+				panel.updateSelection(panel.selected());
 				if (!panel.selected()) {
-					panel.setBackground(panel.getBackgroundColor());	
 					if (!paintBorderOutside) {
 						panel.setBorder(null);
 					}
 				} else {
-					panel.setBackground(panel.getSelectionBackgroundColor());
 					if (!paintBorderOutside) {
 						panel.setBorder(highlightBorder);
 					}
 				}
 			}
-			//panel.revalidate();
-			//panel.repaint();
 		}
 	}
 	
