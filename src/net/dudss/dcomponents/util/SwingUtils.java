@@ -1,4 +1,4 @@
-package net.dudss.dcomponents.misc;
+package net.dudss.dcomponents.util;
 
 /*
  * @(#)SwingUtils.java	1.02 11/15/08

@@ -1,10 +1,46 @@
 package net.dudss.dcomponents;
 
 import java.awt.Color;
+import java.awt.Desktop;
+import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.Window;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
-public class Utils {
+public class DUtils {
 	private static double FACTOR = 0.7;
+	
+	public static void openWebsite(String url) {
+		if (Desktop.isDesktopSupported()) {
+			try {
+				final URI ua_uri = new URI(url);
+				Desktop.getDesktop().browse(ua_uri);
+			} catch (IOException | URISyntaxException exp) {
+				exp.printStackTrace(System.err);
+				System.err.println("\nFailed to open website '" + url + "' in the default browser!");
+			}
+		} else {
+			System.err.println("Failed to open website '" + url + "' in the default browser!\nOperation not supported on the current system.");
+		}
+	}
+	
+	public static void centerWindow(Window f) {
+		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+		f.setLocation((int) (d.getWidth() / 2 - f.getWidth() / 2), (int) (d.getHeight() / 2 - f.getHeight() / 2));
+	}
+	
+	public static void centerWindowInWindow(Window window, Window parent) {
+		if (parent == null) {
+			centerWindow(window);
+			return;
+		}
+		Point p = parent.getLocationOnScreen();
+		window.setLocation(p.x + parent.getWidth() / 2 - window.getWidth() / 2, p.y + parent.getHeight() / 2 - window.getHeight() / 2);
+	}
 	
 	public static Rectangle centerRectInRect(Rectangle r1, Rectangle r2) {
 		int w1 = r1.width;
@@ -169,4 +205,21 @@ public class Utils {
     public static boolean isEmpty(final CharSequence cs) {
         return cs == null || cs.length() == 0;
     }
+    
+    /**
+	 * Check if variable target equals to any of the following variables.
+	 * @return True if so, false otherwise.
+	 */
+	public static <T> boolean any(T target, T... values) {
+	    for (T value : values) {
+	        if (target == null) {
+	            if (value == null) {
+	                return true;
+	            }
+	        } else if (target.equals(value)) {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
 }

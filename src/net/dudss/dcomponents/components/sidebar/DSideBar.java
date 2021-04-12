@@ -17,7 +17,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
-import net.dudss.dcomponents.Utils;
+import net.dudss.dcomponents.DUtils;
 import net.dudss.dcomponents.misc.ClickSensitivityControl;
 import net.dudss.dcomponents.misc.NoneSelectedButtonGroup;
 import net.miginfocom.swing.MigLayout;
@@ -230,7 +230,7 @@ boolean selected = btn.isSelected();</pre>
 		buttonPressedBackgroundColor = buttonBackgroundColor;
 		
 		buttonActiveBackgroundColor = buttonBackgroundColor;
-		buttonActiveForegroundColor = Utils.brighter(UIManager.getColor("Menu.foreground"));
+		buttonActiveForegroundColor = DUtils.brighter(UIManager.getColor("Menu.foreground"));
 		
 		buttonBackgroundHoverColor = buttonBackgroundColor;
 		buttonForegroundHoverColor = buttonActiveForegroundColor;
@@ -240,13 +240,13 @@ boolean selected = btn.isSelected();</pre>
 		backgroundColor = UIManager.getColor("MenuBar.background");
 		foregroundColor = UIManager.getColor("Menu.disabledForeground");
 		
-		buttonBackgroundColor = Utils.darker(backgroundColor);
-		buttonForegroundColor =	Utils.darker(foregroundColor);
+		buttonBackgroundColor = DUtils.darker(backgroundColor);
+		buttonForegroundColor =	DUtils.darker(foregroundColor);
 		
 		buttonPressedBackgroundColor =  Color.RED;
 		
 		buttonActiveBackgroundColor = Color.BLACK;
-		buttonActiveForegroundColor = Utils.brighter(UIManager.getColor("Menu.foreground"));
+		buttonActiveForegroundColor = DUtils.brighter(UIManager.getColor("Menu.foreground"));
 		
 		buttonBackgroundHoverColor = Color.CYAN;
 		buttonForegroundHoverColor = Color.DARK_GRAY;

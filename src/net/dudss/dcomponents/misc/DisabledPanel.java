@@ -27,6 +27,8 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import net.dudss.dcomponents.util.SwingUtils;
+
 /*
  *  The DisablePanel will simulate the usage of a "Glass Pane" except that the
  *  glass pane effect is only for the container and not the entire frame.

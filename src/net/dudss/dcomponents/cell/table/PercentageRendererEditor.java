@@ -7,7 +7,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.table.TableCellEditor;
 
-import net.dudss.dcomponents.Utils;
+import net.dudss.dcomponents.DUtils;
 import net.dudss.dcomponents.cell.DCells;
 
 public class PercentageRendererEditor extends LabelRenderer implements TableCellEditor {
@@ -48,7 +48,7 @@ public class PercentageRendererEditor extends LabelRenderer implements TableCell
 	@Override
 	public Object getCellEditorValue() {
 		if (value instanceof Integer) {
-			if (Utils.isIntegerFast(field.getText())) {
+			if (DUtils.isIntegerFast(field.getText())) {
 				int editorValue = Integer.parseInt(field.getText());
 				if (editorValue < 0) editorValue = 0;
 				if (editorValue > 100) editorValue = 100;

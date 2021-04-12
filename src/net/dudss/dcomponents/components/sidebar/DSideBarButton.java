@@ -15,7 +15,7 @@ import javax.swing.AbstractButton;
 import javax.swing.Action;
 import javax.swing.DefaultButtonModel;
 
-import net.dudss.dcomponents.Utils;
+import net.dudss.dcomponents.DUtils;
 import net.dudss.dcomponents.svg.DFlatSVGIcon;
 import net.dudss.dcomponents.svg.FlatRGBFilter;
 
@@ -57,7 +57,7 @@ class DSideBarButton extends AbstractButton implements MouseListener {
 
 	@Override
 	public String getName() {
-		if (action == null || Utils.isEmpty((String) action.getValue(Action.NAME))) {
+		if (action == null || DUtils.isEmpty((String) action.getValue(Action.NAME))) {
 			return super.getName();
 		}
 		return (String) action.getValue(Action.NAME);
@@ -108,7 +108,7 @@ class DSideBarButton extends AbstractButton implements MouseListener {
 					return sidebar.buttonForegroundColor;
 				}
 			});
-			Rectangle iconRect = Utils.centerRectInRect(new Rectangle(0, 0, icon.getIconWidth(), icon.getIconHeight()), contentBounds);
+			Rectangle iconRect = DUtils.centerRectInRect(new Rectangle(0, 0, icon.getIconWidth(), icon.getIconHeight()), contentBounds);
 			icon.paintIcon(this, g2d, iconRect.x, iconRect.y);
 		} else {
 			paintError(g2d);
