@@ -444,7 +444,6 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 		setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		setAutoscrolls(true);
 		getVerticalScrollBar().setUnitIncrement(16);
-		setBorder(UIManager.getBorder("List.border"));
 		setScrollbarWidth(12);
 		
 		innerPanel = new CustomListInnerPanel();
