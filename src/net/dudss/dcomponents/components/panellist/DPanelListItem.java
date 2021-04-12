@@ -52,7 +52,7 @@ public abstract class DPanelListItem<V> extends JPanel {
 	 * The color the panel's background will be set to upon selection (if highlighting is on)
 	 */
 	public Color getHighlightColor() {
-		return new Color(255, 221, 153);
+		return UIManager.getColor("List.selectionBackground");
 	}
 	
 	void select() {this.selected = true;}
