@@ -637,7 +637,7 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 						panel.setBorder(null);
 					}
 				} else {
-					panel.setBackground(panel.getHighlightColor());
+					panel.setBackground(panel.getSelectionBackgroundColor());
 					if (!paintBorderOutside) {
 						panel.setBorder(highlightBorder);
 					}
@@ -663,7 +663,7 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 						panel.setBorder(null);
 					}
 				} else {
-					panel.setBackground(panel.getHighlightColor());
+					panel.setBackground(panel.getSelectionBackgroundColor());
 					if (!paintBorderOutside) {
 						panel.setBorder(highlightBorder);
 					}
@@ -688,7 +688,7 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 						panel.setBorder(null);
 					}
 				} else {
-					panel.setBackground(panel.getHighlightColor());
+					panel.setBackground(panel.getSelectionBackgroundColor());
 					if (!paintBorderOutside) {
 						panel.setBorder(highlightBorder);
 					}

@@ -45,13 +45,20 @@ public abstract class DPanelListItem<V> extends JPanel {
 	 * The background color the panel should be set to. (Unless it is selected and {@link DPanelList#setPaintBackgroundOnSelection(boolean)} was set to true)
 	 */
 	public Color getBackgroundColor() {
-		return UIManager.getColor("Panel.background");
+		return UIManager.getColor("List.background");
+	}
+	
+	/**
+	 * The color the panel's foreground color should be on selection (if highlighting is on)
+	 */
+	public Color getSelectionForegroundColor() {
+		return UIManager.getColor("List.selectionForeground");
 	}
 	
 	/**
 	 * The color the panel's background will be set to upon selection (if highlighting is on)
 	 */
-	public Color getHighlightColor() {
+	public Color getSelectionBackgroundColor() {
 		return UIManager.getColor("List.selectionBackground");
 	}
 	
