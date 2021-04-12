@@ -7,6 +7,9 @@ buildscript {
     }
 }
 
+group = 'com.github.xDUDSSx'
+version = '1.0'
+
 ext {
     flatlafVersion = '1.1.1'
 }
@@ -18,6 +21,7 @@ def jarFileNameDemo = "DComponentsDemo" + project.version + ".jar"
 def outputJar = "${buildDir}/libs/${jarFileName}"
 
 apply plugin: 'java'
+apply plugin: 'maven-publish'
 apply plugin: 'application'
 apply plugin: 'eclipse'
 
