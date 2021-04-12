@@ -1185,16 +1185,12 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 	
 	// SETTERS FOR UI STYLE / COLORS
 	
-	public void setBorder(Border b) {
-		this.innerPanel.setBorder(b);
-	}
-	
 	public void setHighlightBorder(Border b) {
 		this.highlightBorder = b;
 	}
 	
 	public void setBackground(Color c) {
-		this.innerPanel.setBackground(c);
+		if (innerPanel != null) this.innerPanel.setBackground(c);
 	}
 	
 	public void setSeparatorColor(Color c) {
