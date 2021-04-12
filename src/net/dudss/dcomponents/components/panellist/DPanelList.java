@@ -43,18 +43,18 @@ import net.dudss.dcomponents.misc.ScrollablePanel;
 import net.miginfocom.swing.MigLayout;
 
 /**
- * A swing component which represents a {@link List} in the form of a graphical scroll-able list                             
- * similar to {@link JList} consisting of {@link JPanel}s stacked on top of each other.                                       
- * Each element is being represented by a single {@linkplain JPanel} and the element can be edited by user action             
- * defined by the {@linkplain JPanel}. The panel must be a subclass of {@link DPanelListItem}                          
- * which gives it a direct reference to the represented object that it can interact with.                                     
- * <br><br>                                                                                                                   
- * This component can also change the order of elements in the list by presenting a drag-and-drop interface to the user.      
- * The drag and drop functionality can be disabled.                                                                           
- * <br><br>                                                                                                                   
- * To ensure data integrity the {@link #DPanelList.refresh()} method should be called programmatically after            
+ * A swing component which represents a {@link List} in the form of a graphical scroll-able list
+ * similar to {@link JList} consisting of {@link JPanel}s stacked on top of each other.
+ * Each element is being represented by a single {@linkplain JPanel} and the element can be edited by user action
+ * defined by the {@linkplain JPanel}. The panel must be a subclass of {@link DPanelListItem}
+ * which gives it a direct reference to the represented object that it can interact with.
+ * <br><br>
+ * This component can also change the order of elements in the list by presenting a drag-and-drop interface to the user.
+ * The drag and drop functionality can be disabled.
+ * <br><br>
+ * To ensure data integrity the {@link #DPanelList.refresh()} method should be called programmatically after
  * the elements in the list change.
- * <br><br>                                                                                                      
+ * <br><br>
  * <b>Note about concurrency:</b><br>
  * To avoid concurrency issues when the list is modified or iterated over on another thread, concurrency handling is required.
  * The ultimate method is to use a {@linkplain CopyOnWriteArrayList}.
@@ -73,7 +73,7 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 	private boolean debug = false;
 	
 	/**
-	 * Selection mode of the component. 
+	 * Selection mode of the component.
 	 * <br><br>
 	 * UNSELECTION_ALLOWED - {@link DPanelList#getSelectedItem()} can return null.
 	 * <br><br>
@@ -303,7 +303,7 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 	 * @param structureChangedEvent Whether a structure changed event should be fired.
 	 */
 	public void setList(List<V> list, boolean structureChangedEvent) {
-		this.objects = list;		
+		this.objects = list;
 		refresh(structureChangedEvent);
 	}
 	
@@ -334,8 +334,64 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 		return list;
 	}
 	
+	/**
+	 * Deselects everything and selects a single specific item.
+	 * @param item Item to select.
+	 * @return True if item was marked as selected, false if not found.
+	 */
+	public boolean setSelectedItem(V item) {
+		if (this.selectionMode == SelectionMode.UNSELECTION_FORCED) return false;
+		deselectAll();
+		T foundPanel = findPanelForItem(item);
+		if (foundPanel != null) {
+			foundPanel.select();
+			lastSelectedPanels.add(foundPanel);
+			refreshBackgrounds();
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Deselects everything and selects all specifed items that exist in the list.
+	 * @param items Items to select.
+	 * @return True if item at least one item was marked as selected, false if none.
+	 */
+	public boolean setSelectedItems(List<V> items) {
+		if (this.selectionMode == SelectionMode.UNSELECTION_FORCED) return false;
+		boolean foundAtLeastOne = false;
+		deselectAll();
+		for (V item : items) {
+			T foundPanel = findPanelForItem(item);
+			if (foundPanel != null) {
+				foundPanel.select();
+				lastSelectedPanels.add(foundPanel);
+				foundAtLeastOne = true;
+			}
+		}
+		if (foundAtLeastOne) {
+			refreshBackgrounds();
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Finds the panel representing this item if it exists.
+	 * @return The panel or null if not found.
+	 */
+	private T findPanelForItem(V item) {
+		for (T panel : panels) {
+			if (panel.object.equals(item)) {
+				return panel;
+			}
+		}
+		return null;
+	}
+	
 	public void deselectAll() {
 		deselectAllPanels();
+		updateSelection();
 		refreshBackgrounds();
 	}
 	
@@ -377,13 +433,13 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 					obj = itrObjects.next();
 					panel = itrPanels.next();
 					
-					if (panel.object == obj) {
+					if (panel.object.equals(obj)) {
 						continue;
 					} else {
 						//Search for the object that is supposed to in this position
 						boolean requiredPanelFound = false;
 						for (int y = (i+1); y < panels.size(); y++) {
-							if (panels.get(y).object == obj) {
+							if (panels.get(y).object.equals(obj)) {
 								panels.set(i, panels.get(y));
 								panels.set(y, panel);
 								requiredPanelFound = true;
@@ -489,7 +545,6 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 			targetPanel = null;
 			for (int i = 0; i < panels.size(); i++) {
 				T panel = panels.get(i);
-				//if (panel == lastActivePanel) continue;
 				
 				Rectangle panelRect = panel.getBounds();
 				if (panelRect.contains(mousePos)) {
@@ -552,7 +607,7 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 			
 			if (debug) System.out.println("panel size: " + panels.size() + " objects size: " + objects.size() + " movedPanelIndex: " + movedIndex + " targetIndex: " + targetIndex + " before: " + above);
 			
-			if (targetIndex == -1 || targetPanel == movedPanel || targetIndex == movedIndex) {
+			if (targetIndex == -1 || targetPanel.equals(movedPanel) || targetIndex == movedIndex) {
 				return;
 			}
 			
