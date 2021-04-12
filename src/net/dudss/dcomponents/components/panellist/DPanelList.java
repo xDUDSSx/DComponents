@@ -38,6 +38,7 @@ import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.MatteBorder;
 
+import net.dudss.dcomponents.misc.HSLColor;
 import net.dudss.dcomponents.misc.ScrollablePanel;
 import net.miginfocom.swing.MigLayout;
 
@@ -126,10 +127,10 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 	private boolean scrollUp = false;
 
 	Color defaultBackground = UIManager.getColor("Panel.background");
-	Color dividerColor = new Color(194, 194, 194);
-	Color dropHighlight = new Color(255, 170, 0);
-	Color dropIndicator = new Color(255, 241, 214);
-	Border highlightBorder = new MatteBorder(0, 6, 0, 6, new Color(255, 170, 0));
+	Color dividerColor = UIManager.getColor("Separator.foreground");
+	Color dropHighlight = UIManager.getColor("Table.dropLineColor");
+	Color dropIndicator = new HSLColor(dropHighlight).adjustTone(50);
+	Border highlightBorder = new MatteBorder(0, 6, 0, 6, dropHighlight);
 	
 	private SelectionMode selectionMode;
 	private boolean paintBackgroundOnSelection = true;
