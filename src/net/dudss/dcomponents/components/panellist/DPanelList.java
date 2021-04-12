@@ -214,6 +214,8 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 	 * 
 	 * */
 	public DPanelList(List<V> objectList, Class<T> panelClass, SelectionMode selectionMode, boolean enableDragAndDrop, boolean paintHighlights, boolean paintBorderOutside, Component headerComponent, int gap, int sideGap) {
+		setupUI();
+		
 		panels = new ArrayList<T>();		
 		objects = objectList;
 		this.panelClass = panelClass;
@@ -255,6 +257,20 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 		
 		updateSelection();
 		regenerateRows();
+	}
+	
+	@Override
+	public void updateUI() {
+		super.updateUI();
+		setupUI();
+	}
+	
+	private void setupUI() {
+		defaultBackground = UIManager.getColor("Panel.background");
+		dividerColor = UIManager.getColor("Separator.foreground");
+		dropHighlight = UIManager.getColor("Table.dropLineColor");
+		dropIndicator = new HSLColor(dropHighlight).adjustTone(50);
+		highlightBorder = new MatteBorder(0, 6, 0, 6, dropHighlight);
 	}
 	
 	/**
