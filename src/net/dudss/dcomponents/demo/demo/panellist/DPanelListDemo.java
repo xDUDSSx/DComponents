@@ -25,7 +25,7 @@ public class DPanelListDemo extends JPanel {
 		
 		add(new DSeparator(Style.VERTICAL, "DPanelList"), "cell 0 0, grow");
 		
-		samplePanelList = DPanelListFactory.listDesign(null, SampleItemPanel.class, SelectionMode.SELECTION_FORCED, false, true, null);
+		samplePanelList = DPanelListFactory.listDesign(null, SampleItemPanel.class, SelectionMode.SELECTION_FORCED, true, true, null);
 		add(samplePanelList, "cell 0 1, grow");
 		
 		samplePanelList.setList(sampleItems);

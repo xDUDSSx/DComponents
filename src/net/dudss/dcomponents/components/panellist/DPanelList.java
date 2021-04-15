@@ -371,6 +371,26 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 	}
 	
 	/**
+	 * Deselects everything and selects a single item at a specified index of the list.
+	 * @param item Index of the item to select.
+	 * @return True if item was marked as selected, false if not found.
+	 */
+	public boolean setSelectedIndex(int index) {
+		return setSelectedIndex(index, false);
+	}
+	
+	private boolean setSelectedIndex(int index, boolean repaint) {
+		if (panels == null || index >= panels.size() || index < 0) {
+			return false;
+		}
+		T panel = panels.get(index);
+		panel.select();
+		selectedPanels.add(panel);
+		if (repaint) refreshSelectionPainting();
+		return true;
+	}
+	
+	/**
 	 * Deselects everything and selects all specifed items that exist in the list.
 	 * @param items Items to select.
 	 * @return True if item at least one item was marked as selected, false if none.
@@ -392,6 +412,22 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 			return true;
 		}
 		return false;
+	}
+	
+	/**
+	 * Deselects everything and selects all items at specified indices that exist in the list.
+	 * @param items Items at indices to select.
+	 * @return True if item at least one item was marked as selected, false if none.
+	 */
+	public boolean setSelectedIndices(int... indices) {
+		boolean atLeastOneFound = false;
+		for (int index : indices) {
+			if (setSelectedIndex(index, false)) {
+				atLeastOneFound = true;
+			}
+		}
+		refreshSelectionPainting();
+		return atLeastOneFound;
 	}
 	
 	/**
@@ -1090,6 +1126,9 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 					double off = gap / 2.0d;
 					Line2D.Double line = new Line2D.Double(rect.x - sideGap, rect.y - off, sideGap + rect.width + sideGap, rect.y - off);
 					g2d.draw(line);
+				}
+				if (i == panels.size() - 1) {
+					fillRect(getGapBelowPanel(panels.get(i)), g2d);
 				}
 			}
 			
