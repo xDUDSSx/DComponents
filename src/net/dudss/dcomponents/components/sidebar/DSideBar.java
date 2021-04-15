@@ -164,7 +164,7 @@ boolean selected = btn.isSelected();</pre>
 	public void addTabButton(Action action, boolean selected) {
 		AbstractButton btn = new DSideBarToggleButton(action, buttonSize, buttonInsets, this);
 		toggleButtonGroup.add(btn);
-		btn.setSelected(selected);
+		if (selected) btn.setSelected(selected);
 		contentPanel.add(btn, "wrap");
 	}
 	
