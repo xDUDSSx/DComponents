@@ -18,6 +18,7 @@ import com.formdev.flatlaf.extras.FlatUIDefaultsInspector;
 
 import net.dudss.dcomponents.components.sidebar.DSideBar;
 import net.dudss.dcomponents.demo.demo.DButtonDemo;
+import net.dudss.dcomponents.demo.demo.DLabelPaneDemo;
 import net.dudss.dcomponents.demo.demo.panellist.DPanelListDemo;
 import net.dudss.dcomponents.svg.DFlatSVGIcon;
 import net.miginfocom.swing.MigLayout;
@@ -27,7 +28,7 @@ public class Demo extends JFrame {
 	
 	public Demo() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(200, 200, 600, 500);
+		setBounds(200, 200, 800, 600);
 		setTitle("DComponents Demo");
 		
 		initUI();
@@ -45,16 +46,17 @@ public class Demo extends JFrame {
 		JPanel panel = new JPanel();
 		setContentPane(panel);
 		getContentPane().setLayout(new MigLayout("insets 0", "[]0[grow]", "[grow]"));
-		JPanel rightPanel = new JPanel(new MigLayout("", "[grow]", "[][grow][]"));
+		JPanel rightPanel = new JPanel(new MigLayout("", "[grow]", "[][grow][][]"));
 		
 		panel.add(createSideBar(), "cell 0 0, grow");
 		panel.add(rightPanel, "cell 1 0, grow");
 		
 		rightPanel.add(new DButtonDemo(), "cell 0 0, grow");
 		rightPanel.add(new DPanelListDemo(), "cell 0 1, grow");
+		rightPanel.add(new DLabelPaneDemo(), "cell 0 2, grow");
 		
 		JButton btn = new JButton("Change theme");
-		rightPanel.add(btn, "cell 0 2");
+		rightPanel.add(btn, "cell 0 3");
 		btn.addActionListener((e) -> {
 			FlatAnimatedLafChange.showSnapshot();
 
