@@ -18,6 +18,7 @@ import com.formdev.flatlaf.extras.FlatUIDefaultsInspector;
 
 import net.dudss.dcomponents.components.sidebar.DSideBar;
 import net.dudss.dcomponents.demo.demo.DButtonDemo;
+import net.dudss.dcomponents.demo.demo.panellist.DPanelListDemo;
 import net.dudss.dcomponents.svg.DFlatSVGIcon;
 import net.miginfocom.swing.MigLayout;
 
@@ -50,6 +51,7 @@ public class Demo extends JFrame {
 		panel.add(rightPanel, "cell 1 0, grow");
 		
 		rightPanel.add(new DButtonDemo(), "cell 0 0, grow");
+		rightPanel.add(new DPanelListDemo(), "cell 0 1, grow");
 		
 		JButton btn = new JButton("Change theme");
 		rightPanel.add(btn, "cell 0 2");

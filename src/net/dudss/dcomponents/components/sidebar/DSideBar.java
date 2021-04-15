@@ -145,8 +145,26 @@ boolean selected = btn.isSelected();</pre>
 	 * @param action
 	 */
 	public void addTabButton(Action action) {
+		addTabButton(action, false);
+	}
+	
+	/**
+	 * Creates a toggle button that can be exclusively selected.
+	 * Action should have at least a NAME and SMALL_ICON values.
+	 * 
+	 * The SMALL_ICON should be a FlatSVGIcon.
+	 * 
+	 * The button can be retrieved from the action events it fires and its
+	 * state can be checked (using btn.isSelected())
+	 * Example:
+	 * <pre>AbstractButton btn = (AbstractButton) e.getSource();
+boolean selected = btn.isSelected();</pre>
+	 * @param action
+	 */
+	public void addTabButton(Action action, boolean selected) {
 		AbstractButton btn = new DSideBarToggleButton(action, buttonSize, buttonInsets, this);
 		toggleButtonGroup.add(btn);
+		btn.setSelected(selected);
 		contentPanel.add(btn, "wrap");
 	}
 	

@@ -25,7 +25,8 @@ public class DSeparator extends JPanel {
 	/**
 	 * @wbp.parser.constructor
 	 */
-	public DSeparator() {
+	@SuppressWarnings("unused")
+	private DSeparator() {
 		createVertical("Example", null, DEFAULT_FONT_DELTA, DEFAULT_INSETS);
 	}
 	
@@ -55,6 +56,7 @@ public class DSeparator extends JPanel {
 				createVertical(title, icon, deltaFont, insets);        
 				break;
 		}
+		setOpaque(false);
 	}
 	
 	public static DSeparator createSmallVerticalSeparator(String title) {

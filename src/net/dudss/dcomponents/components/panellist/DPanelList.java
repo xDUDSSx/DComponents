@@ -99,7 +99,7 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 	private T lastActivePanel = null;
 	private T targetPanel = null;
 	
-	private List<T> lastSelectedPanels = new ArrayList<T>();
+	private List<T> selectedPanels = new ArrayList<T>();
 	private T panelToDeselectOnRelease = null;
 	private T panelToSelectOnRelease = null;
 	
@@ -271,6 +271,8 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 		dropHighlight = UIManager.getColor("Table.dropLineColor");
 		dropIndicator = new HSLColor(dropHighlight).adjustTone(50);
 		highlightBorder = new MatteBorder(0, 6, 0, 6, dropHighlight);
+		
+		refreshSelectionPainting();
 	}
 	
 	/**
@@ -330,8 +332,8 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 	 */
 	public V getSelectedItem() {
 		if (this.selectionMode == SelectionMode.UNSELECTION_FORCED) return null;
-		if (lastSelectedPanels.size() > 0) {
-			return lastSelectedPanels.get(0).object;
+		if (selectedPanels.size() > 0) {
+			return selectedPanels.get(0).object;
 		}
 		return null;
 	}
@@ -344,7 +346,7 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 	public List<V> getSelectedItems() {
 		List<V> list = new ArrayList<V>();
  		if (this.selectionMode == SelectionMode.UNSELECTION_FORCED) return list;
-		for (T p : lastSelectedPanels) {
+		for (T p : selectedPanels) {
 			list.add(p.object);
 		}
 		return list;
@@ -361,8 +363,8 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 		T foundPanel = findPanelForItem(item);
 		if (foundPanel != null) {
 			foundPanel.select();
-			lastSelectedPanels.add(foundPanel);
-			refreshBackgrounds();
+			selectedPanels.add(foundPanel);
+			refreshSelectionPainting();
 			return true;
 		}
 		return false;
@@ -381,12 +383,12 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 			T foundPanel = findPanelForItem(item);
 			if (foundPanel != null) {
 				foundPanel.select();
-				lastSelectedPanels.add(foundPanel);
+				selectedPanels.add(foundPanel);
 				foundAtLeastOne = true;
 			}
 		}
 		if (foundAtLeastOne) {
-			refreshBackgrounds();
+			refreshSelectionPainting();
 			return true;
 		}
 		return false;
@@ -408,7 +410,7 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 	public void deselectAll() {
 		deselectAllPanels();
 		updateSelection();
-		refreshBackgrounds();
+		refreshSelectionPainting();
 	}
 	
 	/**
@@ -501,7 +503,7 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 		}
 		
 		updateSelection();
-		if (lastSelectedPanels.isEmpty()) {
+		if (selectedPanels.isEmpty()) {
 			if (selectionMode == SelectionMode.SELECTION_FORCED) {
 				if (panels.size() > 0) {
 					panels.get(0).select();
@@ -683,6 +685,7 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 	 * Regenerates the entire layout (Time expensive)
 	 */
 	private void regenerateRows() {
+		if (panels == null) return;
 		innerPanel.removeAll();
 		for (T panel : panels) {
 			innerPanel.add(panel, "wrap, grow, wmin 1"); //wmin 1 to fix mig layout shrinking issues when using text wrap components (eg. text area)
@@ -708,6 +711,7 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 	 */
 	@SuppressWarnings("unused")
 	private void refreshRows() {
+		if (panels == null) return;
 		for (T panel : panels) {
 			if (paintHighlights) {
 				panel.updateSelection(panel.selected());
@@ -727,9 +731,10 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 	}
 	
 	/**
-	 * Updates backgrounds of panels that need an update.
+	 * Makes panels repaint their selection indicators.
 	 */
-	private void refreshBackgrounds() {
+	private void refreshSelectionPainting() {
+		if (panels == null) return;
 		for (T panel : panels) {
 			if (paintHighlights) {
 				panel.updateSelection(panel.selected());
@@ -744,6 +749,7 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 				}
 			}
 		}
+		this.repaint();
 	}
 	
 	@SuppressWarnings("unused")
@@ -772,13 +778,13 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 	}
 	
 	private List<T> updateSelection() {
-		lastSelectedPanels.clear();
+		selectedPanels.clear();
 		for (T panel : panels) {
 			if (panel.selected()) {
-				lastSelectedPanels.add(panel);
+				selectedPanels.add(panel);
 			}
 		}
-		return lastSelectedPanels;
+		return selectedPanels;
 	}
 	
 	private void fireSelectionListener() {
@@ -886,7 +892,7 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 							panelToSelectOnRelease = panel;
 						} else
 						//Regular left click
-						if (!panel.selected() || lastSelectedPanels.size() > 1) {
+						if (!panel.selected() || selectedPanels.size() > 1) {
 							singleSelection(panel);
 							selectionChanged = true;
 						}
@@ -907,7 +913,7 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 				}
 			}
 			updateSelection();
-			refreshBackgrounds();
+			refreshSelectionPainting();
 			revalidateAndRepaint();
 			
 			if (selectionChanged) {
@@ -923,14 +929,14 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 					switch (dropStatus) {
 						case ABOVE:
 							if (debug) System.out.println("Dropped above panel " + panels.indexOf(targetPanel));
-							moveRows(targetPanel, lastSelectedPanels, true);
+							moveRows(targetPanel, selectedPanels, true);
 							if (actionListener != null) {
 								actionListener.actionPerformed(generateEvent(SELECTION_CHANGED));
 							}
 							break;
 						case BELOW:
 							if (debug) System.out.println("Dropped below panel " + panels.indexOf(targetPanel));
-							moveRows(targetPanel, lastSelectedPanels, false);
+							moveRows(targetPanel, selectedPanels, false);
 							if (actionListener != null) {
 								actionListener.actionPerformed(generateEvent(SELECTION_CHANGED));
 							}
@@ -944,14 +950,14 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 						panelToDeselectOnRelease.unselect();
 						panelToDeselectOnRelease = null;
 						updateSelection();
-						refreshBackgrounds();
+						refreshSelectionPainting();
 						fireSelectionListener();
 					} else
 					if (panelToSelectOnRelease != null) {
 						singleSelection(panelToSelectOnRelease);
 						panelToSelectOnRelease = null;
 						updateSelection();
-						refreshBackgrounds();
+						refreshSelectionPainting();
 						fireSelectionListener();
 					}
 				}
@@ -985,7 +991,7 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 					return;
 				}
 				
-				if (lastSelectedPanels.size() > 0) {
+				if (selectedPanels.size() > 0) {
 					if (innerPanel.getCursor().getType() != Cursor.MOVE_CURSOR) {
 						innerPanel.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
 					}		
@@ -1227,6 +1233,13 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 	@Override
 	public synchronized void removeMouseListener(MouseListener l) {
 		innerPanel.removeMouseListener(l);
+	}
+	
+	@Override
+	public void setOpaque(boolean isOpaque) {
+		super.setOpaque(isOpaque);
+		getViewport().setOpaque(isOpaque);
+		if (innerPanel != null) innerPanel.setOpaque(isOpaque);
 	}
 	
 	// SETTERS FOR UI STYLE / COLORS
