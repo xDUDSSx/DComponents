@@ -40,12 +40,10 @@ public abstract class DDialog extends JDialog {
 
 	public DDialog(Frame owner, String title, boolean modal) {
 		super(owner, title, modal);
-		initUI();
 	}
 
 	public DDialog(Frame owner, String title, boolean modal, GraphicsConfiguration gc) {
 		super(owner, title, modal, gc);
-		initUI();
 	}
 
 	public DDialog(Dialog owner) {
@@ -62,12 +60,10 @@ public abstract class DDialog extends JDialog {
 
 	public DDialog(Dialog owner, String title, boolean modal) {
 		super(owner, title, modal);
-		initUI();
 	}
 
 	public DDialog(Dialog owner, String title, boolean modal, GraphicsConfiguration gc) {
 		super(owner, title, modal, gc);
-		initUI();
 	}
 
 	public DDialog(Window owner) {
@@ -84,15 +80,13 @@ public abstract class DDialog extends JDialog {
 
 	public DDialog(Window owner, String title, Dialog.ModalityType modalityType) {
 		super(owner, title, modalityType);
-		initUI();
 	}
 
 	public DDialog(Window owner, String title, Dialog.ModalityType modalityType, GraphicsConfiguration gc) {
 		super(owner, title, modalityType, gc);
-		initUI();
 	}
 
-	private void initUI() {	
+	protected void initUI() {	
 		installEscapeCloseOperation(this);
 		
 		JPanel headerWrapper = new JPanel(new BorderLayout());
