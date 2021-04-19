@@ -1,12 +1,15 @@
 package net.dudss.dcomponents.demo;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import com.formdev.flatlaf.FlatDarkLaf;
@@ -16,6 +19,8 @@ import com.formdev.flatlaf.extras.FlatAnimatedLafChange;
 import com.formdev.flatlaf.extras.FlatInspector;
 import com.formdev.flatlaf.extras.FlatUIDefaultsInspector;
 
+import net.dudss.dcomponents.DUtils;
+import net.dudss.dcomponents.components.DDialog;
 import net.dudss.dcomponents.components.sidebar.DSideBar;
 import net.dudss.dcomponents.demo.demo.DButtonDemo;
 import net.dudss.dcomponents.demo.demo.DLabelPaneDemo;
@@ -46,7 +51,7 @@ public class Demo extends JFrame {
 		JPanel panel = new JPanel();
 		setContentPane(panel);
 		getContentPane().setLayout(new MigLayout("insets 0", "[]0[grow]", "[grow]"));
-		JPanel rightPanel = new JPanel(new MigLayout("", "[grow]", "[][grow][][]"));
+		JPanel rightPanel = new JPanel(new MigLayout("", "[grow]", "[][grow][][][]"));
 		
 		panel.add(createSideBar(), "cell 0 0, grow");
 		panel.add(rightPanel, "cell 1 0, grow");
@@ -54,9 +59,36 @@ public class Demo extends JFrame {
 		rightPanel.add(new DButtonDemo(), "cell 0 0, grow");
 		rightPanel.add(new DPanelListDemo(), "cell 0 1, grow");
 		rightPanel.add(new DLabelPaneDemo(), "cell 0 2, grow");
+		rightPanel.add(new JButton(new AbstractAction("DDialog demo") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JDialog dialog = new DDialog(SwingUtilities.getWindowAncestor(rightPanel)) {
+
+					@Override
+					public Component createHeaderPanel() {
+						return null;
+					}
+
+					@Override
+					public Component createContentPanel() {
+						// TODO Auto-generated method stub
+						return new JPanel();
+					}
+
+					@Override
+					public Component createButtonPanel() {
+						// TODO Auto-generated method stub
+						return new JPanel();
+					}
+				};
+				dialog.pack();
+				DUtils.centerWindow(dialog);
+				dialog.setVisible(true);
+			}
+		}), "cell 0 3, grow");
 		
 		JButton btn = new JButton("Change theme");
-		rightPanel.add(btn, "cell 0 3");
+		rightPanel.add(btn, "cell 0 4");
 		btn.addActionListener((e) -> {
 			FlatAnimatedLafChange.showSnapshot();
 

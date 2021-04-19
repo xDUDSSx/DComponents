@@ -3,8 +3,10 @@ package net.dudss.dcomponents.demo.demo;
 import java.awt.Dimension;
 
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import net.dudss.dcomponents.DUtils;
 import net.dudss.dcomponents.components.DLabelPane;
@@ -21,7 +23,7 @@ public class DLabelPaneDemo extends JPanel {
 		add(show);
 		
 		show.addActionListener((e) -> {
-			JFrame frame = new JFrame();
+			JDialog frame = new JDialog(SwingUtilities.getWindowAncestor(DLabelPaneDemo.this));
 			frame.setTitle("DLabelPane Demo");
 			frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			frame.setSize(new Dimension(300, 300));

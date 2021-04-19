@@ -6,7 +6,7 @@ repositories {
 }
 
 ext {
-    flatlafVersion = '1.1.1'
+    flatlafVersion = '1.1.2'
 }
 
 dependencies {
