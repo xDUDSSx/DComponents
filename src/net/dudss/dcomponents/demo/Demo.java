@@ -1,6 +1,7 @@
 package net.dudss.dcomponents.demo;
 
 import java.awt.Component;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
@@ -56,36 +57,45 @@ public class Demo extends JFrame {
 		panel.add(createSideBar(), "cell 0 0, grow");
 		panel.add(rightPanel, "cell 1 0, grow");
 		
+		DDialog dialog = new DDialog(SwingUtilities.getWindowAncestor(rightPanel), false) {
+
+			@Override
+			public Component createHeaderPanel() {
+				return null;
+			}
+
+			@Override
+			public Component createContentPanel() {
+				// TODO Auto-generated method stub
+				return new JPanel();
+			}
+
+			@Override
+			public Component createButtonPanel() {
+				// TODO Auto-generated method stub
+				return new JPanel();
+			}
+		};
+		
 		rightPanel.add(new DButtonDemo(), "cell 0 0, grow");
 		rightPanel.add(new DPanelListDemo(), "cell 0 1, grow");
 		rightPanel.add(new DLabelPaneDemo(), "cell 0 2, grow");
 		rightPanel.add(new JButton(new AbstractAction("DDialog demo") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JDialog dialog = new DDialog(SwingUtilities.getWindowAncestor(rightPanel)) {
-
-					@Override
-					public Component createHeaderPanel() {
-						return null;
-					}
-
-					@Override
-					public Component createContentPanel() {
-						// TODO Auto-generated method stub
-						return new JPanel();
-					}
-
-					@Override
-					public Component createButtonPanel() {
-						// TODO Auto-generated method stub
-						return new JPanel();
-					}
-				};
+				dialog.installOverlay();
 				dialog.pack();
-				DUtils.centerWindow(dialog);
+				DUtils.centerWindowInWindow(dialog, (Window) dialog.getParent());
 				dialog.setVisible(true);
 			}
-		}), "cell 0 3, grow");
+		}), "cell 0 3");
+		
+		rightPanel.add(new JButton(new AbstractAction("Toggle visibility") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				dialog.setVisible(!dialog.isVisible());
+			}
+		}), "cell 0 3");
 		
 		JButton btn = new JButton("Change theme");
 		rightPanel.add(btn, "cell 0 4");
