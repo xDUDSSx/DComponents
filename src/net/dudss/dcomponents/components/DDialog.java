@@ -40,6 +40,11 @@ import javax.swing.border.MatteBorder;
  * - The dialog has the ability to overwrite it's parents window glasspane to display a transparent overlay when the dialog is visible.
  *   This can create a sort of a internal dialog feeling without actually being internal. See the {@link #installOverlay()} method,
  *   it should be called after creating the dialog.
+ *  
+ * UIManager:
+ * The following defaults can be changed
+ * DDialog.overlayOpacity (Float)
+ * DDialog.overlayColor¨  (Color)
  * 
  * @author DUDSS 2021
  *
@@ -48,6 +53,9 @@ public abstract class DDialog extends JDialog {
 	JComponent overlay = null;
 	float overlayOpacity;
 	Color overlayColor;
+	
+	public final String overlayOpacityKey = "DDialog.overlayOpacity";
+	public final String overlayColorKey = "DDialog.overlayColor";
 	
 	public DDialog() {
 		this((Frame) null, false);
@@ -104,7 +112,13 @@ public abstract class DDialog extends JDialog {
 	@Override
 	protected void dialogInit() {
 		super.dialogInit();
+		installDefaults();
 		installEscapeCloseOperation(this);
+	}
+	
+	private void installDefaults() {
+		if (UIManager.get(overlayOpacityKey) == null) UIManager.put(overlayOpacityKey, 0.25f);
+		if (UIManager.get(overlayColorKey) == null) UIManager.put(overlayColorKey, Color.BLACK);
 	}
 	
 	/**
@@ -116,7 +130,7 @@ public abstract class DDialog extends JDialog {
 	 * Currently only works with JFrames as parents and only with modal dialogs.
 	 */
 	public void installOverlay() {
-		installOverlay(Color.BLACK, 0.25f);
+		installOverlay(UIManager.getColor(overlayColorKey), (Float) UIManager.get(overlayColorKey));
 	}
 	
 	/**
