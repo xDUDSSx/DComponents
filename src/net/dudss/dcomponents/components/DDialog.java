@@ -54,8 +54,8 @@ public abstract class DDialog extends JDialog {
 	float overlayOpacity;
 	Color overlayColor;
 	
-	public final String overlayOpacityKey = "DDialog.overlayOpacity";
-	public final String overlayColorKey = "DDialog.overlayColor";
+	public static final String overlayOpacityKey = "DDialog.overlayOpacity";
+	public static final String overlayColorKey = "DDialog.overlayColor";
 	
 	public DDialog() {
 		this((Frame) null, false);
@@ -130,7 +130,7 @@ public abstract class DDialog extends JDialog {
 	 * Currently only works with JFrames as parents and only with modal dialogs.
 	 */
 	public void installOverlay() {
-		installOverlay(UIManager.getColor(overlayColorKey), (Float) UIManager.get(overlayColorKey));
+		installOverlay(UIManager.getColor(overlayColorKey), (Float) UIManager.get(overlayOpacityKey));
 	}
 	
 	/**
