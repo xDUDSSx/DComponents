@@ -25,10 +25,33 @@ import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.border.MatteBorder;
 
+/**
+ * An extended {@linkplain JDialog} that separates content into 3 parts.
+ * - Header
+ * - Content
+ * - Buttons
+ * 
+ * These parts can be constructed in their respective abstract methods.
+ * In order to allow member variable initialization it is <b>required</b> to call the protected method {@link #initUI()}
+ * in the subclass constructor to create the dialog contents.
+ * 
+ * Additionally:
+ * - The dialog can be closed using the ESC key.
+ * - The dialog has the ability to overwrite it's parents window glasspane to display a transparent overlay when the dialog is visible.
+ *   This can create a sort of a internal dialog feeling without actually being internal. See the {@link #installOverlay()} method,
+ *   it should be called after creating the dialog.
+ * 
+ * @author DUDSS 2021
+ *
+ */
 public abstract class DDialog extends JDialog {
 	JComponent overlay = null;
 	float overlayOpacity;
 	Color overlayColor;
+	
+	public DDialog() {
+		this((Frame) null, false);
+	}
 	
 	public DDialog(Frame owner) {
 		this(owner, true);
@@ -111,8 +134,8 @@ public abstract class DDialog extends JDialog {
 		overlayColor = color;
 		
 		if (this.getModalityType() == ModalityType.MODELESS) {
-			//System.err.println("DComponents - DDialog must be modal to install overlay!");
-			//return;
+			System.err.println("DComponents - DDialog must be modal to install overlay!");
+			return;
 		}
 		
 		if (this.getParent() instanceof JFrame) {
