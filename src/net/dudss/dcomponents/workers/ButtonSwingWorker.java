@@ -7,7 +7,6 @@ import javax.swing.Icon;
 
 import net.dudss.dcomponents.components.DButton;
 import net.dudss.dcomponents.data.Pair;
-import net.dudss.dcomponents.icons.Icons;
 
 /**
  * Swing worker that executes in the background while setting button icon to loading and overriding its text. 
@@ -26,11 +25,11 @@ public abstract class ButtonSwingWorker extends BetterSwingWorker {
 	//For DButton
 	Pair<String, Icon> action;
 	
-	public ButtonSwingWorker(AbstractButton btn, String processText) {
+	public ButtonSwingWorker(AbstractButton btn, Icon busyIcon, String processText) {
 		this.btn = btn;
 		
 		if (btn instanceof DButton) {
-			this.action = new Pair<String, Icon>(processText, Icons.createSpinnerIcon(btn));
+			this.action = new Pair<String, Icon>(processText, busyIcon);
 			((DButton) btn).queueAction(this.action);
 		} else {
 			originalText = btn.getText();
@@ -40,7 +39,7 @@ public abstract class ButtonSwingWorker extends BetterSwingWorker {
 			for (int i = 0; i < listeners.length; i++) {
 				btn.removeActionListener(listeners[i]);
 			}
-			btn.setIcon(Icons.createSpinnerIcon(btn));
+			btn.setIcon(busyIcon);
 			btn.setText(processText);
 		}
 	}

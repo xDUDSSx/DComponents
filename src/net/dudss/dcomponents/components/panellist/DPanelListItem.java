@@ -11,6 +11,15 @@ import javax.swing.UIManager;
  * @see {@link DPanelList}
  * @author DUDSS
  *
+ * The following methods can be additionally called or overriden to provide more functionality.
+ * - updateSelection() = method called on selection change that can be used to paint custom selection
+ * - selected() 	   = check if the panel is selected
+ * - index()           = retrieve index of the panel in its panel list
+ * 
+ * - getBackgroundColor()
+ * - getSelectionBackgroundColor
+ * - getSelectionForegroundColor()
+ * 
  * @param <V> The type of the elements that make up the represented {@link List}.
  */
 public abstract class DPanelListItem<V> extends JPanel {
@@ -20,6 +29,11 @@ public abstract class DPanelListItem<V> extends JPanel {
 	 * Referenced object this panel is representing within the {@link DPanelList} component.
 	 */
 	protected V object;
+	
+	/**
+	 * Index in the panel list. (0 -> panel list size)
+	 */
+	private int index;
 	
 	/**
 	 * Flag used to determine whether this panel is part of the current {@link DPanelList} selection.
@@ -76,5 +90,10 @@ public abstract class DPanelListItem<V> extends JPanel {
 	
 	void select() {this.selected = true;}
 	void unselect() {this.selected = false;}
-	boolean selected() {return this.selected;}
+	protected boolean selected() {return this.selected;}
+	
+	void setIndex(int index) {this.index = index;}
+	protected int index() {
+		return this.index;
+	}
 }

@@ -1,12 +1,17 @@
 apply plugin: 'java'
 apply plugin: 'maven'
 
-repositories {
-  jcenter()
+allprojects {
+	repositories {
+		jcenter()
+		maven {
+        	url "https://oss.sonatype.org/content/repositories/snapshots/"
+    	}
+	}
 }
 
 ext {
-    flatlafVersion = '1.1.2'
+    flatlafVersion = '1.2-SNAPSHOT'
 }
 
 dependencies {
@@ -15,6 +20,8 @@ dependencies {
 	
 	implementation group: 'com.formdev', name: 'flatlaf-extras', version: "$flatlafVersion"
 	implementation group: 'com.formdev', name: 'flatlaf-swingx', version: "$flatlafVersion"
+	
+	implementation group: 'org.swinglabs.swingx', name: 'swingx-all', version: '1.6.5-1'
 	
 	implementation group: 'com.miglayout', name: 'miglayout-swing', version: '5.2'
 	implementation group: 'org.mini2Dx', name: 'universal-tween-engine', version: '6.3.3'

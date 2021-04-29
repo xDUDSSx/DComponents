@@ -99,6 +99,7 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 	private T lastActivePanel = null;
 	private T targetPanel = null;
 	
+	
 	private List<T> selectedPanels = new ArrayList<T>();
 	private T panelToDeselectOnRelease = null;
 	private T panelToSelectOnRelease = null;
@@ -238,7 +239,9 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 			//Populate the component with current object list elements
 			for (V object : objectList) {
 				try {
-					panels.add(panelClass.getDeclaredConstructor(object.getClass()).newInstance(object));
+					T panel = panelClass.getDeclaredConstructor(object.getClass()).newInstance(object);
+					panels.add(panel);
+					panel.setIndex(panels.size() - 1);
 				} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 					e.printStackTrace(System.err);
 				}
@@ -328,7 +331,6 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 	/**
 	 * Returns the currently selected element.
 	 * @see {@link SelectionMode}
-	 * @return
 	 */
 	public V getSelectedItem() {
 		if (this.selectionMode == SelectionMode.UNSELECTION_FORCED) return null;
@@ -336,6 +338,18 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 			return selectedPanels.get(0).object;
 		}
 		return null;
+	}
+	
+	/**
+	 * Returns the currently selected elements' index. -1 for none.
+	 * @see {@link SelectionMode}
+	 */
+	public int getSelectedIndex() {
+		if (this.selectionMode == SelectionMode.UNSELECTION_FORCED) return -1;
+		if (selectedPanels.size() > 0) {
+			return selectedPanels.get(0).index();
+		}
+		return -1;
 	}
 	
 	/**
@@ -350,6 +364,20 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 			list.add(p.object);
 		}
 		return list;
+	}
+	
+	/**
+	 * Returns indexes of all currently selected elements.
+	 * @see {@link SelectionMode}
+	 * @return A array of the selected indexes. This array is empty if there is no selection.
+	 */
+	public int[] getSelectedIndexes() {
+		int selection[] = new int[selectedPanels.size()];
+		if (this.selectionMode == SelectionMode.UNSELECTION_FORCED) return selection;
+		for (int i = 0; i < selectedPanels.size(); i++) {
+			selection[i] = selectedPanels.get(i).index();
+		}
+		return selection;
 	}
 	
 	/**
@@ -415,13 +443,13 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 	}
 	
 	/**
-	 * Deselects everything and selects all items at specified indices that exist in the list.
-	 * @param items Items at indices to select.
+	 * Deselects everything and selects all items at specified indexes that exist in the list.
+	 * @param items Items at indexes to select.
 	 * @return True if item at least one item was marked as selected, false if none.
 	 */
-	public boolean setSelectedIndices(int... indices) {
+	public boolean setSelectedIndexes(int... indexes) {
 		boolean atLeastOneFound = false;
-		for (int index : indices) {
+		for (int index : indexes) {
 			if (setSelectedIndex(index, false)) {
 				atLeastOneFound = true;
 			}
@@ -495,7 +523,10 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 						for (int y = (i+1); y < panels.size(); y++) {
 							if (panels.get(y).object.equals(obj)) {
 								panels.set(i, panels.get(y));
+								panels.get(y).setIndex(i);
 								panels.set(y, panel);
+								panel.setIndex(y);
+								
 								requiredPanelFound = true;
 								break;
 							} 
@@ -507,6 +538,7 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 							newPanel = panelClass.getDeclaredConstructor(obj.getClass()).newInstance(obj);
 							itrPanels.previous();
 							itrPanels.add(newPanel);
+							newPanel.setIndex(itrPanels.nextIndex() - 1);
 						} catch (Exception e) {
 							e.printStackTrace(System.err);
 						}
@@ -520,6 +552,7 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 							V objectAtY = objects.get(y);
 							newPanel = panelClass.getDeclaredConstructor(objectAtY.getClass()).newInstance(objectAtY);
 							panels.add(newPanel);
+							newPanel.setIndex(panels.size() - 1);
 						} catch (Exception e) {
 							e.printStackTrace(System.err);
 						}					
@@ -530,7 +563,7 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 					//Removing all remaining panels
 					Iterator<T> removeIterator = panels.listIterator(i);
 					while (removeIterator.hasNext()) {
-						removeIterator.next();
+						removeIterator.next().setIndex(-1);
 						removeIterator.remove();
 					}
 					break;
@@ -685,6 +718,9 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 					objects.add(targetIndex + 1, movedObject);
 				}
 			}
+			
+			movedPanel.setIndex(targetIndex);
+			targetPanel.setIndex(movedIndex);
 		}
 	}
 	
@@ -723,7 +759,9 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 	private void regenerateRows() {
 		if (panels == null) return;
 		innerPanel.removeAll();
+		int index = 0;
 		for (T panel : panels) {
+			panel.setIndex(index);
 			innerPanel.add(panel, "wrap, grow, wmin 1"); //wmin 1 to fix mig layout shrinking issues when using text wrap components (eg. text area)
 			if (paintHighlights) {
 				panel.updateSelection(panel.selected());
@@ -738,6 +776,7 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 				}
 			}
 			panel.updateComponents(panel.selected());
+			index++;
 		}
 		revalidateAndRepaint();
 	}

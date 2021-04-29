@@ -15,9 +15,10 @@ import javax.swing.AbstractButton;
 import javax.swing.Action;
 import javax.swing.DefaultButtonModel;
 
+import com.formdev.flatlaf.extras.FlatSVGIcon;
+import com.formdev.flatlaf.extras.FlatSVGIcon.ColorFilter;
+
 import net.dudss.dcomponents.DUtils;
-import net.dudss.dcomponents.svg.DFlatSVGIcon;
-import net.dudss.dcomponents.svg.FlatRGBFilter;
 
 class DSideBarButton extends AbstractButton implements MouseListener {
 	DSideBar sidebar;
@@ -94,20 +95,17 @@ class DSideBarButton extends AbstractButton implements MouseListener {
 			paintError(g2d);
 		}
 		Object o = this.action.getValue(Action.SMALL_ICON);
-		if (o != null && o instanceof DFlatSVGIcon) {
-			DFlatSVGIcon icon = (DFlatSVGIcon) o;
-			icon.setFilter(new FlatRGBFilter() {
-				@Override
-				public Color filterRGB(Color c) {
-					if (model.isSelected()) {
-						return sidebar.buttonActiveForegroundColor;
-					}
-					if (model.isRollover()) {
-						return sidebar.buttonForegroundHoverColor;
-					}
-					return sidebar.buttonForegroundColor;
+		if (o != null && o instanceof FlatSVGIcon) {
+			FlatSVGIcon icon = (FlatSVGIcon) o;
+			icon.setColorFilter(new ColorFilter(color -> {
+				if (model.isSelected()) {
+					return sidebar.buttonActiveForegroundColor;
 				}
-			});
+				if (model.isRollover()) {
+					return sidebar.buttonForegroundHoverColor;
+				}
+				return sidebar.buttonForegroundColor;
+			}));
 			Rectangle iconRect = DUtils.centerRectInRect(new Rectangle(0, 0, icon.getIconWidth(), icon.getIconHeight()), contentBounds);
 			icon.paintIcon(this, g2d, iconRect.x, iconRect.y);
 		} else {

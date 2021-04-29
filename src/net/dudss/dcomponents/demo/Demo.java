@@ -7,7 +7,6 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -18,6 +17,7 @@ import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.extras.FlatAnimatedLafChange;
 import com.formdev.flatlaf.extras.FlatInspector;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.extras.FlatUIDefaultsInspector;
 
 import net.dudss.dcomponents.DUtils;
@@ -26,7 +26,6 @@ import net.dudss.dcomponents.components.sidebar.DSideBar;
 import net.dudss.dcomponents.demo.demo.DButtonDemo;
 import net.dudss.dcomponents.demo.demo.DLabelPaneDemo;
 import net.dudss.dcomponents.demo.demo.panellist.DPanelListDemo;
-import net.dudss.dcomponents.svg.DFlatSVGIcon;
 import net.miginfocom.swing.MigLayout;
 
 public class Demo extends JFrame {
@@ -57,7 +56,7 @@ public class Demo extends JFrame {
 		panel.add(createSideBar(), "cell 0 0, grow");
 		panel.add(rightPanel, "cell 1 0, grow");
 		
-		DDialog dialog = new DDialog(SwingUtilities.getWindowAncestor(rightPanel), false) {
+		DDialog dialog = new DDialog(SwingUtilities.getWindowAncestor(rightPanel), true) {
 
 			@Override
 			public Component createHeaderPanel() {
@@ -74,6 +73,11 @@ public class Demo extends JFrame {
 			public Component createButtonPanel() {
 				// TODO Auto-generated method stub
 				return new JPanel();
+			}
+
+			@Override
+			public void onClose() {
+				// TODO Auto-generated method stub
 			}
 		};
 		
@@ -122,13 +126,13 @@ public class Demo extends JFrame {
 	
 	private DSideBar createSideBar() {
 		DSideBar lblNewLabel = new DSideBar();
-		lblNewLabel.addTabButton(new AbstractAction("Úvodse", new DFlatSVGIcon("res/info.svg", sidebarIconSize, sidebarIconSize)) {
+		lblNewLabel.addTabButton(new AbstractAction("Úvodse", new FlatSVGIcon("res/info.svg", sidebarIconSize, sidebarIconSize)) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				//System.out.println("Tab1 clicked!");
 			}
 		});
-		lblNewLabel.addTabButton(new AbstractAction("Konfigurace", new DFlatSVGIcon("res/left_right_arrows.svg", sidebarIconSize, sidebarIconSize)) {
+		lblNewLabel.addTabButton(new AbstractAction("Konfigurace", new FlatSVGIcon("res/left_right_arrows.svg", sidebarIconSize, sidebarIconSize)) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				AbstractButton btn = (AbstractButton) e.getSource();
@@ -138,7 +142,7 @@ public class Demo extends JFrame {
 			}
 		});
 		lblNewLabel.addPush();
-		lblNewLabel.addButton(new AbstractAction("Nastavení", new DFlatSVGIcon("res/settings.svg", sidebarIconSize, sidebarIconSize)) {
+		lblNewLabel.addButton(new AbstractAction("Nastavení", new FlatSVGIcon("res/settings.svg", sidebarIconSize, sidebarIconSize)) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				//System.out.println("Nastaven� clicked!");

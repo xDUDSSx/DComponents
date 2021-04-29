@@ -10,6 +10,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -24,6 +25,7 @@ import javax.swing.JRootPane;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.border.MatteBorder;
+import javax.swing.Timer;
 
 /**
  * An extended {@linkplain JDialog} that separates content into 3 parts.
@@ -54,8 +56,18 @@ public abstract class DDialog extends JDialog {
 	float overlayOpacity;
 	Color overlayColor;
 	
+	boolean animationEnabled;
+	int animationDelay;
+	int animationLength;
+	float realOverlayOpacity;
+	Timer timer;
+	
 	public static final String overlayOpacityKey = "DDialog.overlayOpacity";
 	public static final String overlayColorKey = "DDialog.overlayColor";
+	public static final String overlayAnimationKey = "DDialog.overlayAnimation";
+	public static final String overlayAnimationFpsKey = "DDialog.overlayAnimationFps";
+	public static final String overlayAnimationLengthKey = "DDialog.overlayAnimationLength";
+	
 	
 	public DDialog() {
 		this((Frame) null, false);
@@ -109,101 +121,15 @@ public abstract class DDialog extends JDialog {
 		super(owner, title, modal ? Dialog.ModalityType.APPLICATION_MODAL : Dialog.ModalityType.MODELESS);
 	}
 	
-	@Override
-	protected void dialogInit() {
-		super.dialogInit();
-		installDefaults();
-		installEscapeCloseOperation(this);
-	}
-	
-	private void installDefaults() {
-		if (UIManager.get(overlayOpacityKey) == null) UIManager.put(overlayOpacityKey, 0.25f);
-		if (UIManager.get(overlayColorKey) == null) UIManager.put(overlayColorKey, Color.BLACK);
-	}
-	
-	/**
-	 * Makes the dialog replace its parents glass pane with a transparent overlay of a certain color.
-	 * By default black with 25% opacity is used.
-	 * The overlay appears when the dialog is set to visible and disappears when its closed or set invisible.
-	 * 
-	 * Note that the dialog changes the parents glass pane and discards the original.
-	 * Currently only works with JFrames as parents and only with modal dialogs.
-	 */
-	public void installOverlay() {
-		installOverlay(UIManager.getColor(overlayColorKey), (Float) UIManager.get(overlayOpacityKey));
-	}
-	
-	/**
-	 * Makes the dialog replace its parents glass pane with a transparent overlay of a certain color.
-	 * The overlay appears when the dialog is set to visible and disappears when its closed or set invisible.
-	 * 
-	 * Note that the dialog changes the parents glass pane and discards the original.
-	 * Currently only works with JFrames as parents and only with modal dialogs.
-	 * 
-	 * @param color Color of the overlay (default is Color.BLACK)
-	 * @param opacity Transparency of the overlay (default is 0.25f)
-	 */
-	public void installOverlay(Color color, float opacity) {
-		overlayOpacity = opacity;
-		overlayColor = color;
-		
-		if (this.getModalityType() == ModalityType.MODELESS) {
-			System.err.println("DComponents - DDialog must be modal to install overlay!");
-			return;
-		}
-		
-		if (this.getParent() instanceof JFrame) {
-			JFrame parentFrame = (JFrame) this.getParent();
-			if (!parentFrame.getGlassPane().isVisible()) {
-				overlay = new JComponent() {
-					AlphaComposite alcom = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, overlayOpacity);
-					
-					@Override
-					protected void paintComponent(Graphics g) {
-						super.paintComponent(g);
-						Graphics2D g2d = (Graphics2D) g;
-						g2d.setColor(overlayColor);
-						g2d.setComposite(alcom);
-						g2d.fillRect(0, 0, this.getWidth(), this.getHeight());
-					}
-				};
-				
-				this.addWindowListener(new WindowAdapter() {
-		            @Override
-		            public void windowClosing(WindowEvent e) {
-		                hideOverlay();
-		            }
-		        });
-			}
-		}
-	}
-	
-	@Override
-	public void setVisible(boolean b) {
-		if (b) {
-			showOverlay();
-		} else {
-			hideOverlay();
-		}
-		super.setVisible(b);
-	}
-	
-	protected void showOverlay() {
-		if (overlay != null) {
-			if (this.getParent() instanceof JFrame) {
-				JFrame parentFrame = (JFrame) this.getParent();
-				parentFrame.setGlassPane(overlay);
-			}
-			overlay.setVisible(true);
-		}
-	}
-	
-	protected void hideOverlay() {
-		if (overlay != null) {
-			overlay.setVisible(false);
-		}
-	}
+	abstract public Component createHeaderPanel();
 
+	abstract public Component createContentPanel();
+
+	abstract public Component createButtonPanel();
+	
+	/**
+	 * Constructs the dialog's content. Necessary to call from the subclass constructor.
+	 */
 	protected void initUI() {	
 		JPanel headerWrapper = new JPanel(new BorderLayout());
 		JPanel contentWrapper = new JPanel(new BorderLayout());
@@ -231,6 +157,187 @@ public abstract class DDialog extends JDialog {
 		}
 	}
 	
+	@Override
+	protected void dialogInit() {
+		super.dialogInit();
+		installDefaults();
+		installEscapeCloseOperation(this);
+	}
+	
+	private void installDefaults() {
+		if (UIManager.get(overlayOpacityKey) == null) UIManager.put(overlayOpacityKey, 0.25f);
+		if (UIManager.get(overlayColorKey) == null) UIManager.put(overlayColorKey, Color.BLACK);
+		if (UIManager.get(overlayAnimationKey) == null) UIManager.put(overlayAnimationKey, true);
+		if (UIManager.get(overlayAnimationFpsKey) == null) UIManager.put(overlayAnimationFpsKey, 30);
+		if (UIManager.get(overlayAnimationLengthKey) == null) UIManager.put(overlayAnimationLengthKey, 8);
+	}
+	
+	/**
+	 * Makes the dialog replace its parents glass pane with a transparent overlay of a certain color.
+	 * By default black with 25% opacity is used.
+	 * The overlay appears when the dialog is set to visible and disappears when its closed or set invisible.
+	 * 
+	 * Note that the dialog changes the parents glass pane and discards the original.
+	 * Currently only works with JFrames as parents and only with modal dialogs.
+	 */
+	public void installOverlay() {
+		installOverlay(	UIManager.getColor(overlayColorKey),
+						(Float) UIManager.get(overlayOpacityKey),
+						UIManager.getBoolean(overlayAnimationKey),
+						UIManager.getInt(overlayAnimationFpsKey),
+						UIManager.getInt(overlayAnimationLengthKey)
+		);
+	}
+	
+	/**
+	 * Makes the dialog replace its parents glass pane with a transparent overlay of a certain color.
+	 * The overlay appears when the dialog is set to visible and disappears when its closed or set invisible.
+	 * 
+	 * Note that the dialog changes the parents glass pane and discards the original.
+	 * Currently only works with JFrames as parents and only with modal dialogs.
+	 * 
+	 * @param color Color of the overlay (default is Color.BLACK)
+	 * @param opacity Transparency of the overlay (default is 0.25f)
+	 * @param animationEnabled Enable / Disable animated overlay transition
+	 * @param animationFps Animated overlay transition fps
+	 * @param animationLength Animated overlay transition length in frames
+	 */
+	public void installOverlay(Color color, float opacity, boolean animationEnabled, int animationFps, int animationLength) {
+		this.overlayOpacity = opacity;
+		this.overlayColor = color;
+		this.animationEnabled = animationEnabled;
+		this.animationDelay = (int) (1000f/animationFps);
+		this.animationLength = animationLength;
+		
+		if (this.getModalityType() == ModalityType.MODELESS) {
+			System.err.println("DComponents - DDialog must be modal to install overlay!");
+			return;
+		}
+		
+		if (this.getParent() instanceof JFrame) {
+			JFrame parentFrame = (JFrame) this.getParent();
+			if (!parentFrame.getGlassPane().isVisible()) {
+				overlay = new JComponent() {			
+					@Override
+					protected void paintComponent(Graphics g) {
+						super.paintComponent(g);
+						Graphics2D g2d = (Graphics2D) g;
+						g2d.setColor(overlayColor);
+						g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, animationEnabled ? realOverlayOpacity : overlayOpacity));
+						g2d.fillRect(0, 0, this.getWidth(), this.getHeight());
+					}
+				};
+				
+				this.addWindowListener(new WindowAdapter() {
+		            @Override
+		            public void windowClosing(WindowEvent e) {
+		            	onCloseImpl();
+		            }
+		            
+		            @Override
+		            public void windowClosed(WindowEvent e) {
+		            	onCloseImpl();
+		            }
+		        });
+			}
+		}
+	}
+	
+	protected void onCloseImpl() {
+		hideOverlay();
+		onClose();
+	}
+	
+	/**
+	 * Called on dialog close.
+	 */
+	public abstract void onClose();
+	
+	@Override
+	public void dispose() {
+		super.dispose();
+		onCloseImpl();
+	}
+	
+	@Override
+	public void setVisible(boolean b) {
+		if (b) {
+			showOverlay();
+		} else {
+			onCloseImpl();
+		}
+		super.setVisible(b);
+	}
+	
+	protected void showOverlay() {
+		if (overlay != null) {
+			if (this.getParent() instanceof JFrame) {
+				JFrame parentFrame = (JFrame) this.getParent();
+				parentFrame.setGlassPane(overlay);
+			}
+			if (animationEnabled) fadeIn(overlay);
+			overlay.setVisible(true);
+		}
+	}
+	
+	protected void hideOverlay() {
+		if (overlay != null) {
+			if (animationEnabled)
+				fadeOut(overlay);
+			else
+				overlay.setVisible(false);
+		}
+	}
+
+	/**
+	 * Fade in the overlay opacity.
+	 */
+    public void fadeIn(JComponent overlay) {
+    	if (timer != null) timer.stop();
+		timer = new Timer(animationDelay, null);
+		timer.setRepeats(true);
+		timer.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				realOverlayOpacity += overlayOpacity / animationLength;
+				if (realOverlayOpacity < 0) {
+					realOverlayOpacity = 0;
+				}
+				if (realOverlayOpacity > overlayOpacity) {
+					realOverlayOpacity = overlayOpacity;
+					timer.stop();
+				}
+				overlay.repaint();
+			}
+		});
+		timer.start();
+    }
+    
+    /**
+	 * Fade out the overlay opacity.
+	 */ 
+    public void fadeOut(JComponent overlay) {
+    	if (timer != null) timer.stop();
+    	timer = new Timer(animationDelay, null);
+		timer.setRepeats(true);
+		timer.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				realOverlayOpacity -= overlayOpacity / animationLength;
+				if (realOverlayOpacity < 0) {
+					realOverlayOpacity = 0;
+					timer.stop();
+					overlay.setVisible(false);
+				}
+				if (realOverlayOpacity > overlayOpacity) {
+					realOverlayOpacity = overlayOpacity;
+				}
+				overlay.repaint();
+			}
+		});
+		timer.start();
+    }
+    
 	private static final KeyStroke escapeStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
 	public static final String dispatchWindowClosingActionMapKey = "net.dudss.dcomponents:WINDOW_CLOSING";
 
@@ -244,11 +351,5 @@ public abstract class DDialog extends JDialog {
 		root.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(escapeStroke, dispatchWindowClosingActionMapKey);
 		root.getActionMap().put(dispatchWindowClosingActionMapKey, dispatchClosing);
 	}
-
-	abstract public Component createHeaderPanel();
-
-	abstract public Component createContentPanel();
-
-	abstract public Component createButtonPanel();
 
 }
