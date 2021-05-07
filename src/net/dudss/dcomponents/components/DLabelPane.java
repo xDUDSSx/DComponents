@@ -12,7 +12,7 @@ import javax.swing.UIManager;
 public class DLabelPane extends JScrollPane {
 	private static final long serialVersionUID = 1L;
 	
-	private JTextPane area;
+	protected JTextPane area;
 	
 	public DLabelPane() {
 		this("");
@@ -57,5 +57,10 @@ public class DLabelPane extends JScrollPane {
 	public JTextPane getTextPane() {
 		return area;
 	}
+	
+	@Override
+    public Dimension getPreferredSize() {
+		return area.getMinimumSize();
+    }
 }
 

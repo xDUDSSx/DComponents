@@ -15,7 +15,7 @@ import javax.swing.UIManager;
 public class DMultilineLabel extends JScrollPane {
 	private static final long serialVersionUID = 1L;
 	
-	private JTextArea area;
+	protected JTextArea area;
 	
 	public DMultilineLabel() {
 		this("");
