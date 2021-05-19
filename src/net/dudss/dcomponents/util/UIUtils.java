@@ -63,6 +63,13 @@ public class UIUtils {
 		return btn;
 	}
 	
+	public static JButton createOriginalToolbarButton(Action action) {
+		JButton btn = createOriginalButton(action);
+		btn.setHideActionText(true);
+		btn.setToolTipText((String) action.getValue(Action.NAME));
+		return btn;
+	}
+	
 	public static JToggleButton createToolbarToggleButton(Action action) {
 		JToggleButton btn = new JToggleButton(action);
 		btn.setHideActionText(true);
@@ -82,6 +89,32 @@ public class UIUtils {
 	
 	public static JPanel createToolbarPanel() {
 		return new JPanel(new MigLayout("insets n 0 n 0, gap 2"));
+	}
+	
+	/**
+	 * Returns a button whose background will always be the original button background (Button.background)
+	 */
+	public static JButton createOriginalButton() {
+		JButton btn = new JButton() {
+			@Override
+			public Color getBackground() {
+				return UIManager.getColor("Button.background");
+			}
+		};
+		return btn;
+	}
+	
+	/**
+	 * Returns a button whose background will always be the original button background (Button.background)
+	 */
+	public static JButton createOriginalButton(Action action) {
+		JButton btn = new JButton(action) {
+			@Override
+			public Color getBackground() {
+				return UIManager.getColor("Button.background");
+			}
+		};
+		return btn;
 	}
 	
 	public static JButton createUndecoratedButton(String text, Icon icon) {
