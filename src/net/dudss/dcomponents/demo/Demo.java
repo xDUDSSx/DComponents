@@ -43,7 +43,7 @@ public class Demo extends JFrame {
 	}
 	
 	public static void main(String[] args) {
-		FlatDarkLaf.install();
+		FlatDarkLaf.setup();
 		new Demo().setVisible(true);
 	}
 	

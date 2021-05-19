@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.PopupMenuEvent;
@@ -57,6 +58,13 @@ public class UIUtils {
 	
 	public static JButton createToolbarButton(Action action) {
 		JButton btn = new JButton(action);
+		btn.setHideActionText(true);
+		btn.setToolTipText((String) action.getValue(Action.NAME));
+		return btn;
+	}
+	
+	public static JToggleButton createToolbarToggleButton(Action action) {
+		JToggleButton btn = new JToggleButton(action);
 		btn.setHideActionText(true);
 		btn.setToolTipText((String) action.getValue(Action.NAME));
 		return btn;

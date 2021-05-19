@@ -4,14 +4,11 @@ apply plugin: 'maven'
 allprojects {
 	repositories {
 		jcenter()
-		maven {
-        	url "https://oss.sonatype.org/content/repositories/snapshots/"
-    	}
 	}
 }
 
 ext {
-    flatlafVersion = '1.2-SNAPSHOT'
+    flatlafVersion = '1.2'
 }
 
 dependencies {
@@ -29,7 +26,6 @@ dependencies {
 
 group = 'com.github.xDUDSSx'
 version = '1.0'
-
 
 
 def jarFileName = "DComponents" + version + ".jar"
