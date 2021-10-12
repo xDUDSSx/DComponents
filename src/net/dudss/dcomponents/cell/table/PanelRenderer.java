@@ -38,10 +38,10 @@ public class PanelRenderer extends BaseRenderer {
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 		super.updateData(table, value, isSelected, row, column);
 		if (centered) {
-			DCells.configureTable(topLevelPanel, table, isSelected, hasFocus, row, column);
+			super.configureComponentForTable(topLevelPanel, table, isSelected, hasFocus, row, column);
 			panel.setOpaque(false);
 		} else { 
-			DCells.configureTable(panel, table, isSelected, false, row, column);
+			super.configureComponentForTable(panel, table, isSelected, false, row, column);
 		}
 		return centered ? topLevelPanel : panel;
 	}

@@ -8,7 +8,6 @@ import javax.swing.SwingConstants;
 import javax.swing.table.TableCellEditor;
 
 import net.dudss.dcomponents.DUtils;
-import net.dudss.dcomponents.cell.DCells;
 
 public class PercentageRendererEditor extends LabelRenderer implements TableCellEditor {
 	protected JTextField field;
@@ -25,7 +24,7 @@ public class PercentageRendererEditor extends LabelRenderer implements TableCell
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 		updateData(table, value, isSelected, row, column);
 		if (value instanceof Integer) {
-			DCells.configureTable(label, table, isSelected, hasFocus, row, column);
+			super.configureComponentForTable(label, table, isSelected, hasFocus, row, column);
 			label.setText(value.toString() + " %");
 			return label;
 		} else {

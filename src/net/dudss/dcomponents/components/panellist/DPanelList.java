@@ -2,10 +2,12 @@ package net.dudss.dcomponents.components.panellist;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -1261,7 +1263,7 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 	public void setHorizontalScrollbarWidth(int size) {
 		getHorizontalScrollBar().setPreferredSize(new Dimension(0, size));
 	}
-	
+
 	public int getScrollbarWidth() {
 		return Math.max(getVerticalScrollbarWidth(), getHorizontalScrollbarWidth());
 	}

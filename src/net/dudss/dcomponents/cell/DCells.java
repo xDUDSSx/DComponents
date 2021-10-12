@@ -1,5 +1,7 @@
 package net.dudss.dcomponents.cell;
 
+import net.dudss.dcomponents.misc.HSLColor;
+
 import java.awt.Color;
 
 import javax.swing.JComponent;
@@ -45,16 +47,29 @@ public class DCells {
         	comp.setBorder(getNoFocusBorder());
         }
 	}
-	
-	public static void configureTableColors(JComponent comp, JTable table, boolean isSelected, boolean hasFocus, int row, int column) {
-		if (isSelected) {
-			comp.setBackground(table.getSelectionBackground());
-			comp.setForeground(table.getSelectionForeground());
-		} else {
-			comp.setBackground(table.getBackground());
-			comp.setForeground(table.getForeground());
-		}
-	}
+
+    public static void configureTableColors(JComponent comp, JTable table, boolean isSelected, boolean hasFocus, int row, int column) {
+        configureTableColors(comp, table, isSelected, hasFocus, row, column, false);
+    }
+
+    public static void configureTableColors(JComponent comp, JTable table, boolean isSelected, boolean hasFocus, int row, int column, boolean muted) {
+	    if (isSelected) {
+            comp.setBackground(table.getSelectionBackground());
+            comp.setForeground(table.getSelectionForeground());
+	    } else {
+            comp.setBackground(table.getBackground());
+            comp.setForeground(table.getForeground());
+        }
+
+        if (muted) {
+            HSLColor c = new HSLColor(comp.getForeground());
+            if (c.getLuminance() > 0.5f) {
+                comp.setForeground(c.adjustLuminance(85));
+            } else {
+                comp.setForeground(c.adjustLuminance(50));
+            }
+        }
+    }
 	
 	protected static Border getNoFocusBorder() {
         Border border = UIManager.getBorder("Table.cellNoFocusBorder");
