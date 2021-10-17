@@ -26,6 +26,9 @@ public class DPanelListDemo extends JPanel {
 		add(new DSeparator(Style.VERTICAL, "DPanelList"), "cell 0 0, grow");
 		
 		samplePanelList = DPanelListFactory.listDesign(null, SampleItemPanel.class, SelectionMode.SELECTION_FORCED, true, true, null);
+		samplePanelList.setDoubleClickListener((e) -> {
+			System.out.println("DPanelList: Double click on item '" + samplePanelList.getSelectedItem() + "'!");
+		});
 		add(samplePanelList, "cell 0 1, grow");
 		
 		samplePanelList.setList(sampleItems);

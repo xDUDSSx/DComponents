@@ -139,11 +139,13 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 	private boolean paintHighlights = true;
 	
 	private ActionListener actionListener;
+	private ActionListener doubleClickListener;
 	private ActionListener structureListener;
 	
 	private static final String STRUCTURE_CHANGED = "StructureChanged";
 	private static final String SELECTION_CHANGED = "SelectionChanged";
-	
+	private static final String DOUBLE_CLICK = "DoubleClick";
+
 	/**
 	 * A swing components which represents a {@link List} in the form of a graphical scroll-able list 
 	 * similar to {@link JList} consisting of {@link JPanel}s stacked on top of each other.
@@ -287,7 +289,15 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 	public void setSelectionListener(ActionListener listener) {
 		this.actionListener = listener;
 	}
-	
+
+	/**
+	 * Sets the action listener that will get fired when an item is double clicked.
+	 * @param listener
+	 */
+	public void setDoubleClickListener(ActionListener listener) {
+		this.doubleClickListener = listener;
+	}
+
 	/**
 	 * Sets the action listener fired upon panel refresh.
 	 * @param listener
@@ -295,7 +305,19 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 	public void setStructureListener(ActionListener listener) {
 		this.structureListener = listener;
 	}
-	
+
+	public ActionListener getActionListener() {
+		return actionListener;
+	}
+
+	public ActionListener getStructureListener() {
+		return structureListener;
+	}
+
+	public ActionListener getDoubleClickListener() {
+		return doubleClickListener;
+	}
+
 	/**
 	 * Whether to call {@linkplain DPanelListItem#updateSelection(boolean)} upon panel selection and de-selection.
 	 */
@@ -869,6 +891,12 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 			actionListener.actionPerformed(generateEvent(SELECTION_CHANGED));
 		}
 	}
+
+	private void fireDoubleClickListener() {
+		if (doubleClickListener != null) {
+			doubleClickListener.actionPerformed(generateEvent(DOUBLE_CLICK));
+		}
+	}
 	
 	private ActionEvent generateEvent(String command) {
 		return new ActionEvent(this, ActionEvent.ACTION_PERFORMED, command, System.currentTimeMillis(), 0);
@@ -900,7 +928,6 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 				Rectangle panelRect = panel.getBounds();
 				if (panelRect.contains(mousePos)) {
 					//Clicked on a panel
-
 					if (selectionMode == SelectionMode.MULTI_SELECTION && (ctrlDown || shiftDown)) {
 						if (ctrlDown && shiftDown) {
 							if (lastActivePanel == null) {
@@ -1036,6 +1063,10 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 						updateSelection();
 						refreshSelectionPainting();
 						fireSelectionListener();
+						if (e.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(e)) {
+							fireDoubleClickListener();
+							if (debug) System.out.println("Double clicked an item");
+						}
 					}
 				}
 				innerPanel.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
