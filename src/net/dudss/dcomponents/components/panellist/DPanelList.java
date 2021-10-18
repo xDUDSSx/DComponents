@@ -992,13 +992,17 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 						}
 					} else {
 						//If panel is already selected, the selection should apply on mouse release
-						if (panel.selected()) {
+						if (panel.selected() && panel != lastActivePanel) {
 							panelToSelectOnRelease = panel;
 						} else
 						//Regular left click
 						if (!panel.selected() || selectedPanels.size() > 1) {
 							singleSelection(panel);
 							selectionChanged = true;
+						}
+						if (e.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(e)) {
+							fireDoubleClickListener();
+							if (debug) System.out.println("Double clicked an item");
 						}
 					}
 					panelFound = true;
@@ -1027,54 +1031,48 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
-			if (enableDragAndDrop) {
-				if (dragging && lastActivePanel != null) {
-					DropStatus dropStatus = checkDropLocation();
-					switch (dropStatus) {
-						case ABOVE:
-							if (debug) System.out.println("Dropped above panel " + panels.indexOf(targetPanel));
-							moveRows(targetPanel, selectedPanels, true);
-							if (actionListener != null) {
-								actionListener.actionPerformed(generateEvent(SELECTION_CHANGED));
-							}
-							break;
-						case BELOW:
-							if (debug) System.out.println("Dropped below panel " + panels.indexOf(targetPanel));
-							moveRows(targetPanel, selectedPanels, false);
-							if (actionListener != null) {
-								actionListener.actionPerformed(generateEvent(SELECTION_CHANGED));
-							}
-							break;
-						case INVALID:
-							if (debug) System.out.println("Drop invalid");
-							break;
-					}
-				} else {
-					if (e.isControlDown() && panelToDeselectOnRelease != null) {
-						panelToDeselectOnRelease.unselect();
-						panelToDeselectOnRelease = null;
-						updateSelection();
-						refreshSelectionPainting();
-						fireSelectionListener();
-					} else
-					if (panelToSelectOnRelease != null) {
-						singleSelection(panelToSelectOnRelease);
-						panelToSelectOnRelease = null;
-						updateSelection();
-						refreshSelectionPainting();
-						fireSelectionListener();
-						if (e.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(e)) {
-							fireDoubleClickListener();
-							if (debug) System.out.println("Double clicked an item");
+			if (enableDragAndDrop && dragging && lastActivePanel != null) {
+				DropStatus dropStatus = checkDropLocation();
+				switch (dropStatus) {
+					case ABOVE:
+						if (debug) System.out.println("Dropped above panel " + panels.indexOf(targetPanel));
+						moveRows(targetPanel, selectedPanels, true);
+						if (actionListener != null) {
+							actionListener.actionPerformed(generateEvent(SELECTION_CHANGED));
 						}
-					}
+						break;
+					case BELOW:
+						if (debug) System.out.println("Dropped below panel " + panels.indexOf(targetPanel));
+						moveRows(targetPanel, selectedPanels, false);
+						if (actionListener != null) {
+							actionListener.actionPerformed(generateEvent(SELECTION_CHANGED));
+						}
+						break;
+					case INVALID:
+						if (debug) System.out.println("Drop invalid");
+						break;
 				}
-				innerPanel.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-				scrollDown = false;
-				scrollUp = false;
-				dragging = false;
-				revalidateAndRepaint();
+			} else {
+				if (e.isControlDown() && panelToDeselectOnRelease != null) {
+					panelToDeselectOnRelease.unselect();
+					panelToDeselectOnRelease = null;
+					updateSelection();
+					refreshSelectionPainting();
+					fireSelectionListener();
+				} else
+				if (panelToSelectOnRelease != null) {
+					singleSelection(panelToSelectOnRelease);
+					panelToSelectOnRelease = null;
+					updateSelection();
+					refreshSelectionPainting();
+					fireSelectionListener();
+				}
 			}
+			innerPanel.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			scrollDown = false;
+			scrollUp = false;
+			dragging = false;
+			revalidateAndRepaint();
 		}
 		
 		@Override
