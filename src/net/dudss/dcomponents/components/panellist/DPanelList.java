@@ -221,7 +221,7 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 	public DPanelList(List<V> objectList, Class<T> panelClass, SelectionMode selectionMode, boolean enableDragAndDrop, boolean paintHighlights, boolean paintBorderOutside, Component headerComponent, int gap, int sideGap) {
 		setupUI();
 		
-		panels = new ArrayList<T>();		
+		panels = new CopyOnWriteArrayList<>();
 		objects = objectList;
 		this.panelClass = panelClass;
 		this.selectionMode = selectionMode;
