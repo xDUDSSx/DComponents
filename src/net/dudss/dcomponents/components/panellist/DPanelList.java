@@ -221,7 +221,7 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 	public DPanelList(List<V> objectList, Class<T> panelClass, SelectionMode selectionMode, boolean enableDragAndDrop, boolean paintHighlights, boolean paintBorderOutside, Component headerComponent, int gap, int sideGap) {
 		setupUI();
 		
-		panels = new CopyOnWriteArrayList<>();
+		panels = new ArrayList<>();
 		objects = objectList;
 		this.panelClass = panelClass;
 		this.selectionMode = selectionMode;
@@ -924,108 +924,108 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 			mousePos.setLocation(e.getX(), e.getY());
 			boolean panelFound = false;
 
-			for (T panel : panels) {
-				Rectangle panelRect = panel.getBounds();
-				if (panelRect.contains(mousePos)) {
-					//Clicked on a panel
-					if (selectionMode == SelectionMode.MULTI_SELECTION && (ctrlDown || shiftDown)) {
-						if (ctrlDown && shiftDown) {
-							if (lastActivePanel == null) {
-								singleSelection(panel);
-								selectionChanged = true;
-							} else {
-								int lastIndex = panels.indexOf(lastActivePanel);
-								int currentIndex = panels.indexOf(panel);
-								if (lastIndex == currentIndex) {
-									//Do nothing
-								} else
-								if (lastIndex > currentIndex) {
-									for (int i = 0; i < (lastIndex - currentIndex); i++) {
-										panels.get(currentIndex + i).select();
-									}
-									lastActivePanel.select();
-									selectionChanged = true;
-								} else {
-									for (int i = 0; i < (currentIndex - lastIndex); i++) {
-										panels.get(lastIndex + i).select();
-									}
-									panel.select();
-									selectionChanged = true;
-								}
-							}
-						} else
-						if (ctrlDown) {
-							if (!panel.selected()) {
-								panel.select();
-								selectionChanged = true;
-							} else {
-								panelToDeselectOnRelease = panel;
-							}
-							lastActivePanel = panel;
-						} else 
-						if (shiftDown) {
-							if (lastActivePanel == null) {
-								singleSelection(panel);
-								selectionChanged = true;
-							} else {
-								int lastIndex = panels.indexOf(lastActivePanel);
-								int currentIndex = panels.indexOf(panel);
-								if (lastIndex == currentIndex) {
-									//Do nothing
-								} else
-								if (lastIndex > currentIndex) {
-									deselectAllPanels();
-									for (int i = 0; i < (lastIndex - currentIndex); i++) {
-										panels.get(currentIndex + i).select();
-									}
-									lastActivePanel.select();
-									selectionChanged = true;
-								} else {
-									deselectAllPanels();
-									for (int i = 0; i < (currentIndex - lastIndex); i++) {
-										panels.get(lastIndex + i).select();
-									}
-									panel.select();
-									selectionChanged = true;
-								}
-							}
-						}
-					} else {
-						//If panel is already selected, the selection should apply on mouse release
-						if (panel.selected() && panel != lastActivePanel) {
-							panelToSelectOnRelease = panel;
-						} else
-						//Regular left click
-						if (!panel.selected() || selectedPanels.size() > 1) {
-							singleSelection(panel);
-							selectionChanged = true;
-						}
-						if (e.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(e)) {
-							fireDoubleClickListener();
-							if (debug) System.out.println("Double clicked an item");
-						}
-					}
-					panelFound = true;
-				}
-			}
-			if (!panelFound) {
-				if (selectionMode == SelectionMode.UNSELECTION_ALLOWED) {
-					//if (selectedPanel != null) selectedPanel.setBackground(selectedPanel.getHighlightColor());
-					deselectAllPanels();
-					selectionChanged = true;
-				}
-			}
-			if (debug) {
+			try {
 				for (T panel : panels) {
-					if (panel.selected()) System.out.println("Selected panel " + panels.indexOf(panel));
+					Rectangle panelRect = panel.getBounds();
+					if (panelRect.contains(mousePos)) {
+						//Clicked on a panel
+						if (selectionMode == SelectionMode.MULTI_SELECTION && (ctrlDown || shiftDown)) {
+							if (ctrlDown && shiftDown) {
+								if (lastActivePanel == null) {
+									singleSelection(panel);
+									selectionChanged = true;
+								} else {
+									int lastIndex = panels.indexOf(lastActivePanel);
+									int currentIndex = panels.indexOf(panel);
+									if (lastIndex == currentIndex) {
+										//Do nothing
+									} else if (lastIndex > currentIndex) {
+										for (int i = 0; i < (lastIndex - currentIndex); i++) {
+											panels.get(currentIndex + i).select();
+										}
+										lastActivePanel.select();
+										selectionChanged = true;
+									} else {
+										for (int i = 0; i < (currentIndex - lastIndex); i++) {
+											panels.get(lastIndex + i).select();
+										}
+										panel.select();
+										selectionChanged = true;
+									}
+								}
+							} else if (ctrlDown) {
+								if (!panel.selected()) {
+									panel.select();
+									selectionChanged = true;
+								} else {
+									panelToDeselectOnRelease = panel;
+								}
+								lastActivePanel = panel;
+							} else if (shiftDown) {
+								if (lastActivePanel == null) {
+									singleSelection(panel);
+									selectionChanged = true;
+								} else {
+									int lastIndex = panels.indexOf(lastActivePanel);
+									int currentIndex = panels.indexOf(panel);
+									if (lastIndex == currentIndex) {
+										//Do nothing
+									} else if (lastIndex > currentIndex) {
+										deselectAllPanels();
+										for (int i = 0; i < (lastIndex - currentIndex); i++) {
+											panels.get(currentIndex + i).select();
+										}
+										lastActivePanel.select();
+										selectionChanged = true;
+									} else {
+										deselectAllPanels();
+										for (int i = 0; i < (currentIndex - lastIndex); i++) {
+											panels.get(lastIndex + i).select();
+										}
+										panel.select();
+										selectionChanged = true;
+									}
+								}
+							}
+						} else {
+							//If panel is already selected, the selection should apply on mouse release
+							if (panel.selected() && panel != lastActivePanel) {
+								panelToSelectOnRelease = panel;
+							} else
+								//Regular left click
+								if (!panel.selected() || selectedPanels.size() > 1) {
+									singleSelection(panel);
+									selectionChanged = true;
+								}
+							if (e.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(e)) {
+								fireDoubleClickListener();
+								if (debug) System.out.println("Double clicked an item");
+							}
+						}
+						panelFound = true;
+					}
 				}
-			}
-			updateSelection();
-			refreshSelectionPainting();
-			revalidateAndRepaint();
-			
-			if (selectionChanged) {
-				fireSelectionListener();
+				if (!panelFound) {
+					if (selectionMode == SelectionMode.UNSELECTION_ALLOWED) {
+						//if (selectedPanel != null) selectedPanel.setBackground(selectedPanel.getHighlightColor());
+						deselectAllPanels();
+						selectionChanged = true;
+					}
+				}
+				if (debug) {
+					for (T panel : panels) {
+						if (panel.selected()) System.out.println("Selected panel " + panels.indexOf(panel));
+					}
+				}
+				updateSelection();
+				refreshSelectionPainting();
+				revalidateAndRepaint();
+
+				if (selectionChanged) {
+					fireSelectionListener();
+				}
+			} catch (ConcurrentModificationException ex) {
+				// Ignore
 			}
 		}
 
