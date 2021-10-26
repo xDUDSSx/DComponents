@@ -488,7 +488,7 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 	 */
 	private T findPanelForItem(V item) {
 		for (T panel : panels) {
-			if (panel.object.equals(item)) {
+			if (panel.object == item) { //Object comparison
 				return panel;
 			}
 		}
@@ -539,13 +539,13 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 					obj = itrObjects.next();
 					panel = itrPanels.next();
 					
-					if (panel.object.equals(obj)) {
+					if (panel.object == obj) { // Object comparison
 						continue;
 					} else {
 						//Search for the object that is supposed to in this position
 						boolean requiredPanelFound = false;
 						for (int y = (i+1); y < panels.size(); y++) {
-							if (panels.get(y).object.equals(obj)) {
+							if (panels.get(y).object == obj) { // Object comparison
 								panels.set(i, panels.get(y));
 								panels.get(y).setIndex(i);
 								panels.set(y, panel);
@@ -718,7 +718,7 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 			
 			if (debug) System.out.println("panel size: " + panels.size() + " objects size: " + objects.size() + " movedPanelIndex: " + movedIndex + " targetIndex: " + targetIndex + " before: " + above);
 			
-			if (targetIndex == -1 || targetPanel.equals(movedPanel) || targetIndex == movedIndex) {
+			if (targetIndex == -1 || targetPanel == movedPanel || targetIndex == movedIndex) { // Object comparison
 				return;
 			}
 			
