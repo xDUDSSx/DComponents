@@ -62,11 +62,16 @@ public class UIUtils {
 		btn.setToolTipText((String) action.getValue(Action.NAME));
 		return btn;
 	}
-	
+
 	public static JToggleButton createToolbarToggleButton(Action action) {
+		return createToolbarToggleButton(action, false);
+	}
+
+	public static JToggleButton createToolbarToggleButton(Action action, boolean selected) {
 		JToggleButton btn = new JToggleButton(action);
 		btn.setHideActionText(true);
 		btn.setToolTipText((String) action.getValue(Action.NAME));
+		btn.setSelected(selected);
 		return btn;
 	}
 	
