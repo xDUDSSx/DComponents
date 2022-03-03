@@ -1072,6 +1072,7 @@ public class DPanelList<V, T extends DPanelListItem<V>> extends JScrollPane {
 			scrollDown = false;
 			scrollUp = false;
 			dragging = false;
+			panelToSelectOnRelease = null; //Fixes the selection jumping after a drag, not sure why
 			revalidateAndRepaint();
 		}
 		
